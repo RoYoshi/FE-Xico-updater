@@ -1,10 +1,10 @@
 {
-    "displayName": "Bazzite",
+    "displayName": "FE-Xico",
     "shortDescription": "The operating system for the next generation of gamers",
-    "homepage": "https://bazzite.gg/",
-    "bugAddress": "https://github.com/ublue-os/bazzite",
+    "homepage": "https://github.com/RoYoshi/FE-Xico",
+    "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
     "version": "@VERSION@",
-    "otherText": "Bazzite makes gaming and everyday use smoother and simpler across desktop PCs, handhelds, tablets, and home theater PCs.",
+    "otherText": "FE-Xico is a Fedora Atomic desktop refined for performance, control, and everyday use.",
     "authors": [
         {
             "name": "Kyle Gospodnetich",
