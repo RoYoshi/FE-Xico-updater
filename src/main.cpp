@@ -13,7 +13,7 @@
 #include <QStyleHints>
 #include <QUrl>
 
-#include "version-bazzite-updater.h"
+#include "version-fe-xico-updater.h"
 #include <KAboutData>
 #include <KColorSchemeManager>
 #include <KIconTheme>
@@ -46,12 +46,12 @@ inline constexpr float BASE_HEIGHT = 1080.0;
 
 using namespace Qt::Literals::StringLiterals;
 
-// Handle non-gui functionality: Replace the bazzite-updater process with the selected process defined by the config.ini
+// Handle non-gui functionality: Replace the fe-xico-updater process with the selected process defined by the config.ini
 void commandLine(char *argv[], QCoreApplication &app);
 
 int main(int argc, char *argv[])
 {
-    const QString FULL_APP_DOMAIN = u"io.github.rfrench3.bazzite-updater"_s;
+    const QString FULL_APP_DOMAIN = u"io.github.royoshi.fexicoupdater"_s;
     bool UseFullscreen = false;
 
     if (Utils::GAMESCOPE_SESSION) {
@@ -106,18 +106,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    KLocalizedString::setApplicationDomain("bazzite-updater");
-    QCoreApplication::setOrganizationName(u"UniversalBlue"_s);
+    KLocalizedString::setApplicationDomain("fe-xico-updater");
+    QCoreApplication::setOrganizationName(u"FE-Xico"_s);
 
-    KAboutData aboutData(u"bazzite-updater"_s,
-                         i18n("Bazzite Updater"),
-                         QStringLiteral(BAZZITE_UPDATER_VERSION_STRING),
-                         i18n("Updating and rebasing utility for Bazzite"),
+    KAboutData aboutData(u"fe-xico-updater"_s,
+                         i18n("FE-Xico Updater"),
+                         QStringLiteral(FE_XICO_UPDATER_VERSION_STRING),
+                         i18n("System update and rollback utility for FE-Xico"),
                          KAboutLicense::Unknown, // Can't directly set v2-or-later here
                          i18n("© 2025-2026 Robert French"),
                          i18n("This application can be used through a controller or keyboard to perform various update-related system tasks!"),
-                         u"https://github.com/rfrench3/bazzite_updater"_s,
-                         u"https://github.com/rfrench3/bazzite_updater/issues"_s);
+                         u"https://github.com/RoYoshi/FE-Xico-Updater"_s,
+                         u"https://github.com/RoYoshi/FE-Xico-Updater/issues"_s);
     aboutData.setLicense(KAboutLicense::GPL_V2, KAboutLicense::OrLaterVersions);
     aboutData.addCredit(u"Gareth Widlansky"_s, u"Uupd integration"_s, u""_s, u"https://github.com/gerblesh"_s);
     aboutData.setDesktopFileName(FULL_APP_DOMAIN);
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     KLocalization::setupLocalizedContext(&engine);
-    engine.loadFromModule("io.github.rfrench3.bazzite_updater", u"Main"_s);
+    engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
 
     if (engine.rootObjects().isEmpty()) {
         return EXIT_FAILURE;
