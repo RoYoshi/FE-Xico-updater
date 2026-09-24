@@ -9,7 +9,7 @@ import org.kde.kirigami as Kirigami
 // import org.kde.kirigamiaddons.statefulapp as StatefulApp
 import org.kde.kirigamiaddons.formcard as FC
 
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
 
 Kirigami.Page {
@@ -170,7 +170,7 @@ Kirigami.Page {
                 visible: !(AppConfig.ini.Commands?.systemUpdateCommand || "")
                 enabled: visible
                 text: i18n("The System Update command is not defined.")
-                description: i18n("Make sure the config file (/etc/bazzite-updater/config.ini) is present.")
+                description: i18n("Make sure the config file (/etc/fe-xico-updater/config.ini) is present.")
             }
         }
 

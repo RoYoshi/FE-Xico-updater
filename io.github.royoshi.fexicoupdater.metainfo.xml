@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <!--Created with jdAppStreamEdit 9.2-->
   <id>io.github.royoshi.fexicoupdater</id>
-  <name>Bazzite Updater</name>
+  <name>FE-Xico Updater</name>
   <summary>Update your system</summary>
   <developer id="io.github.royoshi">
     <name>RoYoshi</name>

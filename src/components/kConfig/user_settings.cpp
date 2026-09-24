@@ -8,7 +8,7 @@
 #include <qtmetamacros.h>
 
 UserSettings::UserSettings()
-    : m_group(KSharedConfig::openConfig(u"bazzite-updaterrc"_s), u"Settings"_s)
+    : m_group(KSharedConfig::openConfig(u"fe-xico-updaterrc"_s), u"Settings"_s)
 {
     settings.showRebootReminder = m_group.readEntry("showRebootReminder", defaults.showRebootReminder);
     settings.preferFullscreen = m_group.readEntry("preferFullscreen", defaults.preferFullscreen);

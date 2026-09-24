@@ -7,7 +7,7 @@ import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
 
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
 
 Kirigami.OverlayDrawer {

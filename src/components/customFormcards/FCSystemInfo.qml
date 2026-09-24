@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigamiaddons.formcard as FC
 
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 
 Loader {
     active: RebaseHelperBackend.currentImage.load_successful

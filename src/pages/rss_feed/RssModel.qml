@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import QtQml.XmlListModel
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 
 XmlListModel {
     id: root
