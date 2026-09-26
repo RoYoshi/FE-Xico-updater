@@ -14,6 +14,14 @@ import io.github.rfrench3.controllable as GP
 FC.FormCardPage {
     id: page
 
+    readonly property color feXicoGreen: "#39FF14"
+    readonly property color feXicoMagenta: "#FF00FF"
+
+    title:
+        GP.Labels.east
+        + GP.Labels.spacer_large
+        + i18n("Deployments & Recovery")
+
     function grabScrollbar(item) {
         if (item.contentItem?.ScrollBar?.vertical)
             return item.contentItem.ScrollBar.vertical;
@@ -21,14 +29,15 @@ FC.FormCardPage {
         if (item.parent)
             return grabScrollbar(item.parent);
 
-        console.warn("Parent scrollbar not found, controller scrolling will not function!");
+        console.warn(
+            "Parent scrollbar not found, controller scrolling will not function!"
+        );
     }
+
     property ScrollBar scrollbar: page.grabScrollbar(page)
 
-    title: GP.Labels.east + GP.Labels.spacer_large + i18n("Other Utilities")
-
     function handleInput(buttonId, button_down) {
-        if (button_down == false)
+        if (!button_down)
             return;
 
         if (consoleDrawer.drawerOpen) {
@@ -39,10 +48,10 @@ FC.FormCardPage {
         switch (buttonId) {
         case 3: // Y
             toggleConsole.trigger();
-            // Closes up to 5 passive notifications
-            for (let i = 0; i < 5; ++i) {
+
+            for (let i = 0; i < 5; ++i)
                 hidePassiveNotification();
-            }
+
             break;
         }
     }
@@ -50,29 +59,47 @@ FC.FormCardPage {
     actions: [
         Kirigami.Action {
             id: toggleConsole
-            text: "Toggle Console" + GP.Labels.spacer + GP.Labels.north
+
+            text:
+                i18n("Toggle Console")
+                + GP.Labels.spacer
+                + GP.Labels.north
+
+            icon.name: "utilities-terminal-symbolic"
             shortcut: "F12"
-            onTriggered: consoleDrawer.drawerOpen = !consoleDrawer.drawerOpen
+
+            onTriggered:
+                consoleDrawer.drawerOpen = !consoleDrawer.drawerOpen
         }
     ]
 
     GP.PageNavigation {
         targetScrollbar: page.scrollbar
-        active: !globalDrawer.drawerOpen && !consoleDrawer.drawerOpen
+
+        active:
+            !globalDrawer.drawerOpen
+            && !consoleDrawer.drawerOpen
     }
 
     FC.FormHeader {
-        title: i18n("Rollback Last Update")
+        title: i18n("Rollback FE-Xico")
         visible: rollbackFC.visible
     }
 
     FC.FormCard {
         id: rollbackFC
 
-        visible: AppConfig.ini.Commands.systemRollbackCommand || ""
+        visible:
+            AppConfig.ini.Commands.systemRollbackCommand
+            || ""
 
         FC.FormTextDelegate {
-            text: i18n("This will revert the last update to your system. Your user-level files such as documents and games will not be affected.")
+            text: i18n(
+                "Rollback returns FE-Xico to the previous system deployment. "
+                + "Your personal files, documents, games, and other user data "
+                + "will not be removed."
+            )
+
             textItem.wrapMode: Text.Wrap
         }
 
@@ -80,24 +107,54 @@ FC.FormCardPage {
 
         FC.FormCheckDelegate {
             id: rollbackConfirm
-            text: i18n("Confirm")
 
-            enabled: AppState.allowCommands
+            text: i18n("I understand and want to roll back")
+
+            enabled:
+                AppState.allowCommands
+                && !AppState.rollbackRunning
         }
 
         FormDelegateSeparatorFixed {}
 
         FC.FormButtonDelegate {
-            text: i18n("Initiate Rollback")
-            enabled: rollbackConfirm.checked && rollbackConfirm.enabled
+            text: AppState.rollbackRunning
+                ? i18n("Rolling Back FE-Xico…")
+                : i18n("Rollback to Previous Deployment")
+
+            enabled:
+                rollbackConfirm.checked
+                && rollbackConfirm.enabled
 
             onClicked: {
-                showPassiveNotification(i18n("Rollback Started"), Kirigami.short);
-                RebaseHelperBackend.rollbackImage(function (callback) {
+                showPassiveNotification(
+                    i18n("FE-Xico rollback started."),
+                    Kirigami.short
+                );
+
+                RebaseHelperBackend.rollbackImage(function(callback) {
                     if (callback != 0) {
-                        showPassiveNotification(i18n("Rollback Failed."), Kirigami.long, i18n("Open console") + GP.Labels.spacer + GP.Labels.north, consoleDrawer.open);
+                        showPassiveNotification(
+                            i18n(
+                                "FE-Xico rollback failed. "
+                                + "Check the console for details."
+                            ),
+                            Kirigami.long,
+                            i18n("Open Console")
+                                + GP.Labels.spacer
+                                + GP.Labels.north,
+                            consoleDrawer.open
+                        );
                     } else {
-                        showPassiveNotification(i18n("Rollback Succeeded!"), Kirigami.short);
+                        showPassiveNotification(
+                            i18n(
+                                "Rollback completed. "
+                                + "Restart to boot the previous deployment."
+                            ),
+                            Kirigami.short
+                        );
+
+                        rollbackConfirm.checked = false;
                     }
                 });
             }
@@ -106,19 +163,24 @@ FC.FormCardPage {
                 id: rollbackBusyIndicator
                 running: AppState.rollbackRunning
             }
-            trailingLogo.visible: !rollbackBusyIndicator.running
+
+            trailingLogo.visible:
+                !rollbackBusyIndicator.running
         }
     }
 
     FC.FormHeader {
-        title: i18n("System Image Information")
-        visible: RebaseHelperBackend.currentImage.load_successful
+        title: i18n("Current Deployment")
+        visible:
+            RebaseHelperBackend.currentImage.load_successful
     }
+
     FCSystemInfo {}
 
     FC.FormHeader {
-        title: i18nc("card to display info from os-release", "Additional Information")
+        title: i18n("System Information")
     }
+
     FCOsRelease {}
 
     ConsoleDrawer {

@@ -7,29 +7,45 @@ import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.statefulapp as StatefulApp
-// import org.kde.kirigamiaddons.formcard as FormCard
 
 import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
 
-// NOTE: Gamepad.labels.* automatically show/hide themselves depending on the presence of a controller
+// NOTE:
+// Gamepad.labels.* automatically show/hide themselves depending
+// on the presence of a controller.
 
 StatefulApp.StatefulWindow {
     id: root
 
-    title: i18nc("@title:window", "FE-Xico Updater")
+    // ─────────────────────────────────────────────────────────
+    // FE-Xico identity
+    // ─────────────────────────────────────────────────────────
 
+    readonly property string appIconName: "io.github.royoshi.fexicoupdater"
+
+    readonly property color feXicoGreen: "#39FF14"
+    readonly property color feXicoMagenta: "#FF00FF"
+    readonly property color feXicoSilver: "#C0C0C0"
+
+    title: i18nc("@title:window", "FE-Xico Updater")
     windowName: "FE-Xico Updater"
 
     minimumWidth: Kirigami.Units.gridUnit * 20
     minimumHeight: Kirigami.Units.gridUnit * 20
 
-    visibility: (UseFullscreen || UserSettings.preferFullscreen) ? Window.FullScreen : Window.Windowed
+    visibility: (UseFullscreen || UserSettings.preferFullscreen)
+        ? Window.FullScreen
+        : Window.Windowed
 
     onClosing: close => {
         close.accepted = false;
         actionQuit.triggered();
     }
+
+    // ─────────────────────────────────────────────────────────
+    // Fullscreen shortcut
+    // ─────────────────────────────────────────────────────────
 
     Shortcut {
         sequences: ["F11"]
@@ -44,7 +60,9 @@ StatefulApp.StatefulWindow {
         }
     }
 
-    // Handle global drawer navigation for controllers
+    // ─────────────────────────────────────────────────────────
+    // Controller / dialog handling
+    // ─────────────────────────────────────────────────────────
 
     property var activeDialog: null
 
@@ -59,8 +77,8 @@ StatefulApp.StatefulWindow {
 
             switch (buttonId) {
             case 1: // B
-            case 4: // view, minus
-            case 6: // pause, plus
+            case 4: // View / Minus
+            case 6: // Pause / Plus
                 if (button_down)
                     globalDrawer.drawerOpen = !globalDrawer.drawerOpen;
                 return;
@@ -78,8 +96,19 @@ StatefulApp.StatefulWindow {
         }
     }
 
+    // ─────────────────────────────────────────────────────────
+    // FE-Xico navigation drawer
+    // ─────────────────────────────────────────────────────────
+
     globalDrawer: Kirigami.GlobalDrawer {
         id: globalDrawer
+
+        title: i18n("FE-Xico Updater")
+        titleIcon: root.appIconName
+
+        // Preserve KDE styling while giving selections the
+        // characteristic FE-Xico magenta accent.
+        Kirigami.Theme.highlightColor: root.feXicoMagenta
 
         Behavior on width {
             NumberAnimation {
@@ -88,29 +117,48 @@ StatefulApp.StatefulWindow {
             }
         }
 
-        // In some versions of Kirigami, the drawer width does not function properly. Therefore it must be manually set
+        // Some Kirigami versions do not calculate the drawer
+        // width correctly, so determine it from the longest label.
         FontMetrics {
             id: actionFontMetrics
             font: Kirigami.Theme.defaultFont
         }
+
         function getMaxActionTextWidth() {
             let maxWidth = 0;
+
             for (let i = 0; i < actions.length; i++) {
                 if (actions[i].text) {
-                    // Measure the actual pixel width of this specific string
-                    let currentWidth = actionFontMetrics.advanceWidth(actions[i].text);
-                    if (currentWidth > maxWidth) {
+                    let currentWidth =
+                        actionFontMetrics.advanceWidth(actions[i].text);
+
+                    if (currentWidth > maxWidth)
                         maxWidth = currentWidth;
-                    }
                 }
             }
+
             return maxWidth;
         }
-        width: getMaxActionTextWidth() + Kirigami.Units.iconSizes.medium + (Kirigami.Units.largeSpacing * 4)
+
+        width: getMaxActionTextWidth()
+            + Kirigami.Units.iconSizes.medium
+            + (Kirigami.Units.largeSpacing * 4)
+
+        // ─────────────────────────────────────────────────────
+        // Drawer keyboard navigation
+        // ─────────────────────────────────────────────────────
 
         Shortcut {
-            sequences: [StandardKey.Back, StandardKey.Close, "F1", "Ctrl+M", "Escape"]
+            sequences: [
+                StandardKey.Back,
+                StandardKey.Close,
+                "F1",
+                "Ctrl+M",
+                "Escape"
+            ]
+
             context: Qt.ApplicationShortcut
+
             onActivated: {
                 if (root.activeDialog)
                     root.activeDialog.reject();
@@ -123,10 +171,11 @@ StatefulApp.StatefulWindow {
             sequences: ["Return"]
             context: Qt.ApplicationShortcut
             enabled: globalDrawer.drawerOpen || root.activeDialog
+
             onActivated: {
-                if (root.activeDialog) {
+                if (root.activeDialog)
                     root.activeDialog.accept();
-                } else
+                else
                     globalDrawer.drawerOpen = false;
             }
         }
@@ -135,56 +184,70 @@ StatefulApp.StatefulWindow {
             sequences: ["Up"]
             context: Qt.ApplicationShortcut
             enabled: globalDrawer.drawerOpen
-            onActivated: globalDrawer.__navigateGlobalDrawer(-1)
+
+            onActivated:
+                globalDrawer.__navigateGlobalDrawer(-1)
         }
 
         Shortcut {
             sequences: ["Down"]
             context: Qt.ApplicationShortcut
             enabled: globalDrawer.drawerOpen
-            onActivated: globalDrawer.__navigateGlobalDrawer(1)
+
+            onActivated:
+                globalDrawer.__navigateGlobalDrawer(1)
         }
 
         QQC2.ActionGroup {
             id: pageSelector
         }
 
+        // ─────────────────────────────────────────────────────
+        // Navigation
+        // ─────────────────────────────────────────────────────
+
         actions: [
             Kirigami.Action {
-
                 text: i18n("System Update")
                 icon.name: "system-software-update-symbolic"
 
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
-
                 checked: true
 
-                onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("SystemUpdate.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("SystemUpdate.qml")
             },
-            Kirigami.Action {
 
-                text: i18n("Other Utilities")
+            Kirigami.Action {
+                text: i18n("Deployments & Recovery")
                 icon.name: "system-reboot-symbolic"
 
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
 
-                onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("RebaseHelper.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("RebaseHelper.qml")
             },
-            Kirigami.Action {
 
-                text: i18n("Changelogs")
+            Kirigami.Action {
+                text: i18n("Release Notes")
                 icon.name: "feed-subscribe-symbolic"
 
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
 
-                onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("RssPage.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("RssPage.qml")
             },
+
             Kirigami.Action {
                 separator: true
             },
+
             Kirigami.Action {
                 text: i18n("Settings")
                 icon.name: "settings-configure-symbolic"
@@ -192,33 +255,61 @@ StatefulApp.StatefulWindow {
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
 
-                onTriggered: pageStack.initialPage = Qt.resolvedUrl("Settings.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("Settings.qml")
             },
+
             Kirigami.Action {
-                text: i18nc("About (user's OS)", "About %1", AppConfig.osAboutData.displayName)
+                text: i18nc(
+                    "About (user's OS)",
+                    "About %1",
+                    AppConfig.osAboutData.displayName
+                )
+
                 icon.name: "help-about-symbolic"
 
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
 
-                onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("AboutDataOS.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("AboutDataOS.qml")
             },
+
             Kirigami.Action {
                 text: i18n("About FE-Xico Updater")
-                icon.name: "help-about-symbolic"
+                icon.name: root.appIconName
 
                 checkable: true
                 QQC2.ActionGroup.group: pageSelector
 
-                onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("AboutDataApp.qml")
+                onTriggered:
+                    root.pageStack.initialPage =
+                        Qt.resolvedUrl("AboutDataApp.qml")
             },
+
             Kirigami.Action {
                 separator: true
             },
+
+            // ─────────────────────────────────────────────────
+            // Reboot
+            // ─────────────────────────────────────────────────
+
             Kirigami.Action {
                 id: actionReboot
-                text: i18n("Reboot System") + GP.Labels.spacer + GP.Labels.north
-                icon.name: AppState.commandSucceeded ? "system-shutdown-update-symbolic" : "system-shutdown-symbolic"
+
+                text: (
+                    AppState.commandSucceeded
+                        ? i18n("Restart to Apply Update")
+                        : i18n("Reboot System")
+                ) + GP.Labels.spacer + GP.Labels.north
+
+                icon.name:
+                    AppState.commandSucceeded
+                        ? "system-shutdown-update-symbolic"
+                        : "system-shutdown-symbolic"
 
                 enabled: !AppState.commandRunning
 
@@ -226,26 +317,47 @@ StatefulApp.StatefulWindow {
                     rebootDialog.open();
                 }
             },
+
+            // ─────────────────────────────────────────────────
+            // Quit
+            // ─────────────────────────────────────────────────
+
             Kirigami.Action {
                 id: actionQuit
-                text: i18n("Quit") + GP.Labels.spacer + GP.Labels.west
+
+                text:
+                    i18n("Quit")
+                    + GP.Labels.spacer
+                    + GP.Labels.west
+
                 icon.name: "application-exit-symbolic"
                 shortcut: StandardKey.Quit
+
                 onTriggered: {
-                    // A running command is always worth warning about, only the reminder is optional.
-                    if (AppState.commandRunning || (AppState.commandSucceeded && UserSettings.showRebootReminder)) {
+                    // A running command is always worth warning
+                    // about; only the reboot reminder is optional.
+                    if (
+                        AppState.commandRunning
+                        || (
+                            AppState.commandSucceeded
+                            && UserSettings.showRebootReminder
+                        )
+                    ) {
                         exitDialog.open();
-                    } else
+                    } else {
                         Qt.quit();
+                    }
                 }
             }
         ]
 
-        function __navigateGlobalDrawer(direction) {
-            // direction = +1 or -1, used to navigate with a controller
+        // ─────────────────────────────────────────────────────
+        // Drawer navigation helper
+        // ─────────────────────────────────────────────────────
 
-            // Find the current page
+        function __navigateGlobalDrawer(direction) {
             let currentIndex = -1;
+
             for (let i = 0; i < globalDrawer.actions.length; i++) {
                 if (globalDrawer.actions[i].checked) {
                     currentIndex = i;
@@ -255,23 +367,27 @@ StatefulApp.StatefulWindow {
 
             let newIndex = currentIndex;
 
-            // Find the next page (skip non-page elements of the list)
             for (let j = 0; j < globalDrawer.actions.length; j++) {
                 newIndex += direction;
 
-                // Do not wrap around
-                if (newIndex < 0 || newIndex >= globalDrawer.actions.length)
+                // Do not wrap around.
+                if (
+                    newIndex < 0
+                    || newIndex >= globalDrawer.actions.length
+                ) {
                     return;
+                }
 
                 let item = globalDrawer.actions[newIndex];
+
                 if (item.checkable)
                     break;
             }
 
-            // The next page was found, naviagte to it
             if (newIndex !== currentIndex) {
                 if (currentIndex >= 0)
                     globalDrawer.actions[currentIndex].checked = false;
+
                 globalDrawer.actions[newIndex].triggered();
                 globalDrawer.actions[newIndex].checked = true;
             }
@@ -285,69 +401,111 @@ StatefulApp.StatefulWindow {
             case 0: // A
                 drawerOpen = false;
                 break;
+
             case 2: // X
                 actionQuit.triggered();
                 break;
+
             case 3: // Y
                 actionReboot.triggered();
                 break;
-            case 11: // Dpad Up
+
+            case 11: // D-pad Up
                 __navigateGlobalDrawer(-1);
                 break;
-            case 12: // Dpad Down
+
+            case 12: // D-pad Down
                 __navigateGlobalDrawer(1);
                 break;
             }
         }
     }
 
+    // ─────────────────────────────────────────────────────────
+    // Reboot confirmation
+    // ─────────────────────────────────────────────────────────
+
     AppDialog {
         id: rebootDialog
-        title: i18nc("@title:window", "Reboot System")
+
+        title: AppState.commandSucceeded
+            ? i18nc("@title:window", "Apply FE-Xico Update")
+            : i18nc("@title:window", "Reboot System")
+
         standardButtons: Kirigami.Dialog.NoButton
 
         enabled: !AppState.commandRunning
-
         activeDialogParent: root
 
-        subtitle: i18n("This will reboot the system.")
+        subtitle: AppState.commandSucceeded
+            ? i18n(
+                "Restart the system to boot into the newly staged FE-Xico deployment."
+            )
+            : i18n("This will reboot the system.")
 
         customFooterActions: [
             Kirigami.Action {
                 id: confirmReboot
-                text: i18n("Reboot") + GP.Labels.spacer + GP.Labels.south
 
-                onTriggered: rebootDialog.accept()
+                text:
+                    i18n("Reboot")
+                    + GP.Labels.spacer
+                    + GP.Labels.south
+
+                icon.name: AppState.commandSucceeded
+                    ? "system-shutdown-update-symbolic"
+                    : "system-reboot-symbolic"
+
+                onTriggered:
+                    rebootDialog.accept()
             },
+
             Kirigami.Action {
                 id: cancelReboot
-                text: i18n("Cancel") + GP.Labels.spacer + GP.Labels.east
-                onTriggered: rebootDialog.reject()
+
+                text:
+                    i18n("Cancel")
+                    + GP.Labels.spacer
+                    + GP.Labels.east
+
+                onTriggered:
+                    rebootDialog.reject()
             }
         ]
 
         onAccepted: {
-            AppState.rebootSystem(function (callback) {
+            AppState.rebootSystem(function(callback) {
                 rebootTimer.start();
                 console.log("Reboot callback: " + callback);
             });
         }
 
-        // Wait a little while to ensure "your reboot has failed" isn't ever visible momentarily before rebooting succeeds
+        // Wait before reporting failure so a successful reboot
+        // doesn't briefly display an error notification.
         Timer {
             id: rebootTimer
+
             interval: 5000
             repeat: false
-            onTriggered: root.showPassiveNotification(i18n("The app was unable to reboot. Reboot through your system menu to apply changes."))
+
+            onTriggered:
+                root.showPassiveNotification(
+                    i18n(
+                        "FE-Xico Updater was unable to reboot the system. "
+                        + "Reboot through your system menu to apply changes."
+                    )
+                )
         }
 
         function handleInput(buttonId, button_down) {
             if (!button_down)
                 return;
+
             switch (buttonId) {
             case 0: // A
                 confirmReboot.triggered();
                 break;
+
             case 1: // B
                 cancelReboot.triggered();
                 break;
@@ -355,39 +513,68 @@ StatefulApp.StatefulWindow {
         }
     }
 
+    // ─────────────────────────────────────────────────────────
+    // Exit confirmation
+    // ─────────────────────────────────────────────────────────
+
     AppDialog {
         id: exitDialog
-        title: i18n("Exit Application")
+
+        title: i18n("Exit FE-Xico Updater")
         standardButtons: Kirigami.Dialog.NoButton
 
         activeDialogParent: root
 
         subtitle: {
-            if (!AppState.commandRunning)
-                return AppState.commandSucceeded ? i18n("You must reboot to apply changes.") : i18n("No command is running, you may exit.");
+            if (!AppState.commandRunning) {
+                return AppState.commandSucceeded
+                    ? i18n(
+                        "The FE-Xico update is staged. "
+                        + "Restart the system to apply it."
+                    )
+                    : i18n(
+                        "No update operation is running. "
+                        + "You may safely exit."
+                    );
+            }
 
-            if (AppConfig.ini.Commands?.allowEarlyExit !== "true")
-                return i18n("You should not exit the application until the running command completes. If you exit early, it may break your system.");
-            else
-                return i18n("If you exit the application before the running command completes, it may not apply its changes.");
+            if (
+                AppConfig.ini.Commands?.allowEarlyExit
+                !== "true"
+            ) {
+                return i18n(
+                    "An update operation is still running. "
+                    + "Exiting now may leave the system update incomplete."
+                );
+            }
+
+            return i18n(
+                "An update operation is still running. "
+                + "If you exit now, its changes may not be applied."
+            );
         }
 
         QQC2.CheckBox {
             id: skipRebootReminder
 
-            // Only the reminder can be silenced, not the warning about a running command.
             visible: !AppState.commandRunning
             enabled: visible
 
-            text: i18n("Do not show this again") + GP.Labels.spacer + GP.Labels.north
+            text:
+                i18n("Do not show this again")
+                + GP.Labels.spacer
+                + GP.Labels.north
 
             checked: !UserSettings.showRebootReminder
 
             onToggled: {
                 UserSettings.showRebootReminder = !checked;
 
-                // Assigning to checked drops the binding, put it back
-                checked = Qt.binding(() => !UserSettings.showRebootReminder);
+                // Assigning to checked drops the binding,
+                // so put the binding back.
+                checked = Qt.binding(
+                    () => !UserSettings.showRebootReminder
+                );
             }
 
             Layout.fillWidth: true
@@ -397,19 +584,39 @@ StatefulApp.StatefulWindow {
         customFooterActions: [
             Kirigami.Action {
                 id: confirmExit
-                text: i18nc("dialog to exit the application", "Exit") + GP.Labels.spacer + GP.Labels.south
-                enabled: AppConfig.ini.Commands?.allowEarlyExit === "true" || !AppState.commandRunning
 
-                onTriggered: exitDialog.accept()
+                text:
+                    i18nc(
+                        "dialog to exit the application",
+                        "Exit"
+                    )
+                    + GP.Labels.spacer
+                    + GP.Labels.south
+
+                enabled:
+                    AppConfig.ini.Commands?.allowEarlyExit
+                        === "true"
+                    || !AppState.commandRunning
+
+                onTriggered:
+                    exitDialog.accept()
             },
+
             Kirigami.Action {
                 id: cancelExit
-                text: i18n("Cancel") + GP.Labels.spacer + GP.Labels.east
-                onTriggered: exitDialog.reject()
+
+                text:
+                    i18n("Cancel")
+                    + GP.Labels.spacer
+                    + GP.Labels.east
+
+                onTriggered:
+                    exitDialog.reject()
             }
         ]
 
-        onAccepted: Qt.quit()
+        onAccepted:
+            Qt.quit()
 
         function handleInput(buttonId, button_down) {
             if (!button_down)
@@ -419,9 +626,11 @@ StatefulApp.StatefulWindow {
             case 0: // A
                 confirmExit.triggered();
                 break;
+
             case 1: // B
                 cancelExit.triggered();
                 break;
+
             case 3: // Y
                 if (skipRebootReminder.visible)
                     skipRebootReminder.animateClick();
@@ -430,5 +639,10 @@ StatefulApp.StatefulWindow {
         }
     }
 
-    pageStack.initialPage: Qt.resolvedUrl("SystemUpdate.qml")
+    // ─────────────────────────────────────────────────────────
+    // Initial page
+    // ─────────────────────────────────────────────────────────
+
+    pageStack.initialPage:
+        Qt.resolvedUrl("SystemUpdate.qml")
 }

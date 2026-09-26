@@ -18,9 +18,13 @@ import QtQml.XmlListModel
 FC.FormCardPage {
     id: page
 
-    topPadding: Kirigami.Units.largeSpacing * 4
+    topPadding:
+        Kirigami.Units.largeSpacing * 4
 
-    title: GP.Labels.east + GP.Labels.spacer_large + i18n("Changelogs")
+    title:
+        GP.Labels.east
+        + GP.Labels.spacer_large
+        + i18n("Release Notes")
 
     function grabScrollbar(item) {
         if (item.contentItem?.ScrollBar?.vertical)
@@ -29,52 +33,95 @@ FC.FormCardPage {
         if (item.parent)
             return grabScrollbar(item.parent);
 
-        console.warn("Parent scrollbar not found, controller scrolling will not function!");
+        console.warn(
+            "Parent scrollbar not found, controller scrolling will not function!"
+        );
     }
 
     GP.PageNavigation {
         targetScrollbar: page.grabScrollbar(page)
+        active: !globalDrawer.drawerOpen
     }
 
     FC.FormCard {
-
-        visible: modelLoader.item?.status !== XmlListModel.Ready
+        visible:
+            modelLoader.item?.status
+            !== XmlListModel.Ready
 
         FC.FormPlaceholderMessageDelegate {
             id: nullMsg
-            text: i18nc("@info:placeholder", "No changelogs have been provided.")
-            visible: modelLoader.item?.status === XmlListModel.Null
+
+            text:
+                i18nc(
+                    "@info:placeholder",
+                    "No FE-Xico release notes are available."
+                )
+
+            visible:
+                modelLoader.item?.status
+                === XmlListModel.Null
         }
 
         FC.FormPlaceholderMessageDelegate {
             id: loadingMsg
-            text: i18nc("@info:placeholder", "Loading changelog") + dots
-            visible: modelLoader.item?.status === XmlListModel.Loading
 
-            // loading dots
+            text:
+                i18nc(
+                    "@info:placeholder",
+                    "Loading FE-Xico release notes"
+                )
+                + dots
+
+            visible:
+                modelLoader.item?.status
+                === XmlListModel.Loading
+
             property string dots: "."
             property int dotIndex: 0
 
             Timer {
                 interval: 500
-                running: true
+                running: loadingMsg.visible
                 repeat: true
+
                 onTriggered: {
-                    parent.dotIndex = (parent.dotIndex % 3) + 1;
-                    parent.dots = ".".repeat(parent.dotIndex);
+                    loadingMsg.dotIndex =
+                        (loadingMsg.dotIndex % 3) + 1;
+
+                    loadingMsg.dots =
+                        ".".repeat(loadingMsg.dotIndex);
                 }
             }
         }
 
         FC.FormPlaceholderMessageDelegate {
             id: errorMsg
-            text: i18nc("@info:placeholder", "Error loading changelogs:") + modelLoader.item?.errorString()
-            visible: modelLoader.item?.status === XmlListModel.Error
+
+            text:
+                i18nc(
+                    "@info:placeholder",
+                    "Unable to load FE-Xico release notes: "
+                )
+                + (modelLoader.item?.errorString() || "")
+
+            visible:
+                modelLoader.item?.status
+                === XmlListModel.Error
         }
 
         FC.FormPlaceholderMessageDelegate {
-            text: i18nc("@info:placeholder", "An error has occurred loading changelogs.")
-            visible: !(nullMsg.visible || loadingMsg.visible || errorMsg.visible)
+            text:
+                i18nc(
+                    "@info:placeholder",
+                    "An error occurred while loading FE-Xico release notes."
+                )
+
+            visible:
+                !(
+                    nullMsg.visible
+                    || loadingMsg.visible
+                    || errorMsg.visible
+                )
         }
 
         Item {
@@ -84,11 +131,16 @@ FC.FormCardPage {
 
     Repeater {
         id: repeater
-        enabled: modelLoader.item?.status === XmlListModel.Ready
+
+        enabled:
+            modelLoader.item?.status
+            === XmlListModel.Ready
+
         model: modelLoader.item
 
         delegate: ColumnLayout {
             id: delegate
+
             required property int index
             required property string updated
             required property string link
@@ -97,14 +149,12 @@ FC.FormCardPage {
 
             Layout.fillWidth: true
 
-            // TODO: This might not be needed with the switch to a normal FormCardPage.
-            // Tab navigation must manually be tracked because it is based on load order. Moving down and then back up can load things in a strange order
-            // KeyNavigation.backtab: (delegate.index > 0) ? repeater.itemAt(delegate.index - 1) : delegate.forceActiveFocus(delegate.nextItemInFocusChain(false))
-            // KeyNavigation.tab: (delegate.index < repeater.count - 1) ? repeater.itemAt(delegate.index + 1) : delegate.forceActiveFocus(delegate.nextItemInFocusChain(true))
-
             Item {
-                implicitHeight: Kirigami.Units.mediumSpacing
-                visible: delegate.index > 0
+                implicitHeight:
+                    Kirigami.Units.mediumSpacing
+
+                visible:
+                    delegate.index > 0
             }
 
             FCRssDelegate {

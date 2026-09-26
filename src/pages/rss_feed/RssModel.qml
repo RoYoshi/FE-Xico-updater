@@ -2,25 +2,35 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import QtQml.XmlListModel
+
 import io.github.royoshi.fexicoupdater
 
 XmlListModel {
     id: root
 
-    // Input a list of [atom, rss1, rss2], output the correct option
+    // Input [Atom, RSS1, RSS2] and select the configured format.
     function chooseType(options) {
-        const feedType = AppConfig.ini.General?.rssFeedType;
+        const feedType =
+            AppConfig.ini.General?.rssFeedType;
+
         if (feedType === "atom")
             return options[0];
+
         if (feedType === "rss1")
             return options[1];
-        else
-            return options[2];
+
+        return options[2];
     }
 
-    source: AppConfig.ini.General?.rssFeed
+    source:
+        AppConfig.ini.General?.rssFeed
 
-    query: chooseType(["/feed/entry", "/RDF/item", "/rss/channel/item"])
+    query:
+        chooseType([
+            "/feed/entry",
+            "/RDF/item",
+            "/rss/channel/item"
+        ])
 
     XmlListModelRole {
         name: "title"
@@ -29,17 +39,35 @@ XmlListModel {
 
     XmlListModelRole {
         name: "content"
-        elementName: root.chooseType(["content", "description", "description"])
+
+        elementName:
+            root.chooseType([
+                "content",
+                "description",
+                "description"
+            ])
     }
 
     XmlListModelRole {
         name: "link"
         elementName: "link"
-        attributeName: root.chooseType(["href", "", ""])
+
+        attributeName:
+            root.chooseType([
+                "href",
+                "",
+                ""
+            ])
     }
 
     XmlListModelRole {
         name: "updated"
-        elementName: root.chooseType(["updated", "date", "pubDate"])
+
+        elementName:
+            root.chooseType([
+                "updated",
+                "date",
+                "pubDate"
+            ])
     }
 }
