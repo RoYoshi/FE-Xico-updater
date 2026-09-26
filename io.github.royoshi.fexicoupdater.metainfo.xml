@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<component type="desktop-application">
+  <!--Created with jdAppStreamEdit 9.2-->
+  <id>io.github.royoshi.fexicoupdater</id>
+  <name>FE-Xico Updater</name>
+  <summary>Update your system</summary>
+  <developer id="io.github.royoshi">
+    <name>RoYoshi</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+  <description>
+    <p>Kirigami system updater for FE-Xico, powered by Universal Blue uupd with SDL3 controller support</p>
+  </description>
+  <releases>
+    <release version="0.1.0" date="2026-09-24" type="development">
+      <description>
+        <ul>
+          <li>Initial FE-Xico Updater development release.</li>
+          <li>Rebranded application, package, desktop integration, and configuration paths for FE-Xico.</li>
+          <li>Retains Universal Blue uupd integration and existing update functionality.</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+    <control>gamepad</control>
+  </supports>
+  <content_rating type="oars-1.1"/>
+  <keywords>
+    <keyword>Updater</keyword>
+    <keyword>FE-Xico</keyword>
+    <keyword>Kirigami</keyword>
+  </keywords>
+</component>

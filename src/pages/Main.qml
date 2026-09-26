@@ -9,7 +9,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.statefulapp as StatefulApp
 // import org.kde.kirigamiaddons.formcard as FormCard
 
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
 
 // NOTE: Gamepad.labels.* automatically show/hide themselves depending on the presence of a controller
@@ -17,9 +17,9 @@ import io.github.rfrench3.controllable as GP
 StatefulApp.StatefulWindow {
     id: root
 
-    title: i18nc("@title:window", "Bazzite Updater")
+    title: i18nc("@title:window", "FE-Xico Updater")
 
-    windowName: "Bazzite Updater"
+    windowName: "FE-Xico Updater"
 
     minimumWidth: Kirigami.Units.gridUnit * 20
     minimumHeight: Kirigami.Units.gridUnit * 20
@@ -204,7 +204,7 @@ StatefulApp.StatefulWindow {
                 onTriggered: root.pageStack.initialPage = Qt.resolvedUrl("AboutDataOS.qml")
             },
             Kirigami.Action {
-                text: i18n("About Bazzite Updater")
+                text: i18n("About FE-Xico Updater")
                 icon.name: "help-about-symbolic"
 
                 checkable: true

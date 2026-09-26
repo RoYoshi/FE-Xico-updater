@@ -1,12 +1,12 @@
-%global appid io.github.rfrench3.bazzite-updater
+%global appid io.github.royoshi.fexicoupdater
 
-Name:           bazzite-updater
+Name:           fe-xico-updater
 Version:        %(cat version.txt)
 Release:        1%{?dist}
-Summary:        Update your Bazzite system
+Summary:        Update your FE-Xico system
 
 License:        GPL-2.0-or-later
-URL:            https://github.com/rfrench3/bazzite-updater
+URL:            https://github.com/RoYoshi/FE-Xico-Updater
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 
 BuildRequires:  desktop-file-utils
@@ -39,10 +39,10 @@ Requires:       kf6-qqc2-desktop-style%{?_isa}
 Requires:       qqc2-breeze-style%{?_isa}
 Requires:       qt6-controllable%{?_isa}
 
-Provides:       bazzite-updater = %{version}-%{release}
+Provides:       fe-xico-updater = %{version}-%{release}
 
 %description
-This is a convenient, easy-to-use interface for updating your Bazzite system.
+This is a convenient, easy-to-use interface for updating your FE-Xico system.
 - Simple and powerful
 - Full support for all input types (keyboard/mouse, controller, touchscreen)
 
@@ -55,22 +55,22 @@ This is a convenient, easy-to-use interface for updating your Bazzite system.
 
 %install
 %cmake_install
-%find_lang bazzite-updater
+%find_lang fe-xico-updater
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/%{appid}.*.xml || :
 desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 
-%files -f bazzite-updater.lang
+%files -f fe-xico-updater.lang
 %license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt,FSFAP.txt}
 %doc README.md
-%{_kf6_bindir}/bazzite-updater
+%{_kf6_bindir}/fe-xico-updater
 %{_kf6_datadir}/applications/%{appid}.desktop
 %{_kf6_metainfodir}/%{appid}.*.xml
 %{_kf6_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
-%config(noreplace) /etc/bazzite-updater/config.ini
-/etc/bazzite-updater/
+%config(noreplace) /etc/fe-xico-updater/config.ini
+/etc/fe-xico-updater/
 
 %changelog
 * Thu Feb 05 2026 Robert French
-- Initial rpm build of Bazzite Updater
+- Initial rpm build of FE-Xico Updater

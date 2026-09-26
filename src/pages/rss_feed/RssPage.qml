@@ -10,7 +10,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.formcard as FC
 
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
 
 import QtQml.XmlListModel

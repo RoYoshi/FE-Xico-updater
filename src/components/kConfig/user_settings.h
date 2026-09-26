@@ -25,7 +25,7 @@ struct Settings {
 };
 static const Settings defaults = Settings();
 
-/* Writable per-user preferences, stored in ~/.config/bazzite-updaterrc.
+/* Writable per-user preferences, stored in ~/.config/fe-xico-updaterrc.
  * These only affect how the UI presents itself. Anything that decides which
  * command gets run stays in the read-only system config, see findConfigFile().
  */

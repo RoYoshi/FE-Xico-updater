@@ -4,7 +4,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import io.github.rfrench3.bazzite_updater
+import io.github.royoshi.fexicoupdater
 
 // Use a TextArea for theming, display text with the ListView
 TextArea {

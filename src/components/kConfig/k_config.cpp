@@ -18,7 +18,7 @@
 
 AppConfig::AppConfig()
 {
-    serviceHelperScript = findConfigFile(u"bazzite-updater/service-as-program.sh"_s);
+    serviceHelperScript = findConfigFile(u"fe-xico-updater/service-as-program.sh"_s);
 
     // Store the OsRelease file into a QJsonObject
     QFile os_release(u"/etc/os-release"_s);
@@ -36,7 +36,7 @@ AppConfig::AppConfig()
     }
 
     // Store the KAboutData object into a QJsonObject
-    QFile aboutData(findConfigFile(u"bazzite-updater/KAboutData_OS.json"_s));
+    QFile aboutData(findConfigFile(u"fe-xico-updater/KAboutData_OS.json"_s));
     if (!aboutData.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Failed to open KAboutData_OS";
         aboutOs[u"displayName"_s] = u"Failed to fetch information."_s;
@@ -102,7 +102,7 @@ void AppConfig::setupOsRelease(QFile &file)
     }
 }
 
-// (ex: u"bazzite-updater/config.ini"_s) Returns the full path to the config file that should be used.
+// (ex: u"fe-xico-updater/config.ini"_s) Returns the full path to the config file that should be used.
 QString findConfigFile(const QString &relativePath)
 {
     QStringList bases;
@@ -142,7 +142,7 @@ namespace SingletonInternals
 
 ConfigIni::ConfigIni()
 {
-    auto filepath = findConfigFile(u"bazzite-updater/config.ini"_s);
+    auto filepath = findConfigFile(u"fe-xico-updater/config.ini"_s);
     auto base_path = QFileInfo(filepath).absolutePath();
 
     KSharedConfigPtr config = KSharedConfig::openConfig(filepath, KConfig::SimpleConfig);

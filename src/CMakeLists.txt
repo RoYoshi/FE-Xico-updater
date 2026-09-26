@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: BSD-2-Clause
 # SPDX-FileCopyrightText: 2025-2026 Robert French <frenchrobertm@outlook.com>
 
-add_executable(bazzite-updater)
+add_executable(fe-xico-updater)
 
-ecm_add_qml_module(bazzite-updater
+ecm_add_qml_module(fe-xico-updater
     URI
-    io.github.rfrench3.bazzite_updater
+    io.github.royoshi.fexicoupdater
 )
 
-target_sources(bazzite-updater
+target_sources(fe-xico-updater
     PRIVATE
     main.cpp
     utils.h
@@ -26,7 +26,7 @@ target_sources(bazzite-updater
     ${CMAKE_CURRENT_SOURCE_DIR}/components/kConfig/user_settings.cpp
 )
 
-target_include_directories(bazzite-updater
+target_include_directories(fe-xico-updater
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rebase_helper
@@ -39,7 +39,7 @@ set(ABOUTAPP_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/pages/AboutDataApp.qml")
 set(ABOUTAPP_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/pages/AboutDataApp.qml")
 configure_file(${ABOUTAPP_INPUT} ${ABOUTAPP_OUTPUT} @ONLY)
 
-ecm_target_qml_sources(bazzite-updater
+ecm_target_qml_sources(fe-xico-updater
     SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/Main.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/SystemUpdate.qml
@@ -60,7 +60,7 @@ ecm_target_qml_sources(bazzite-updater
     ${ABOUTAPP_OUTPUT}
 )
 
-target_link_libraries(bazzite-updater
+target_link_libraries(fe-xico-updater
     PRIVATE
     Qt6::Core
     Qt6::Gui
@@ -83,4 +83,4 @@ target_link_libraries(bazzite-updater
 
 add_subdirectory(components)
 
-install(TARGETS bazzite-updater ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS fe-xico-updater ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

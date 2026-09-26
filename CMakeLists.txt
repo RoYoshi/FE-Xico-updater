@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(READ "version.txt" APP_VERSION)
-project(bazzite-updater VERSION ${APP_VERSION})
+string(STRIP "${APP_VERSION}" APP_VERSION)
+project(fe-xico-updater VERSION ${APP_VERSION})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -69,8 +70,8 @@ include(KDEClangFormat)
 
 include(ECMSetupVersion)
 ecm_setup_version(${PROJECT_VERSION}
-    VARIABLE_PREFIX BAZZITE_UPDATER
-    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/version-bazzite-updater.h"
+    VARIABLE_PREFIX FE_XICO_UPDATER
+    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/version-fe-xico-updater.h"
 )
 
 ecm_find_qmlmodule(org.kde.kirigamiaddons.formcard REQUIRED)
@@ -106,29 +107,29 @@ add_subdirectory(src)
 
 ### Install desktop files ###
 
-install(FILES io.github.rfrench3.bazzite-updater.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-install(FILES io.github.rfrench3.bazzite-updater.svg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps/)
-install(FILES io.github.rfrench3.bazzite-updater.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
+install(FILES io.github.royoshi.fexicoupdater.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(FILES io.github.royoshi.fexicoupdater.svg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps/)
+install(FILES io.github.royoshi.fexicoupdater.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 if(_USE_XDG_CONFIG)
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/bazzite-updater"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/fe-xico-updater"
     PATTERN "service-as-program.sh" EXCLUDE
   )
   install(
     PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/service-as-program.sh"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/bazzite-updater"
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/fe-xico-updater"
   )
 else()
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/"
-    DESTINATION "/etc/bazzite-updater"
+    DESTINATION "/etc/fe-xico-updater"
     PATTERN "service-as-program.sh" EXCLUDE
   )
   install(
     PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/service-as-program.sh"
-    DESTINATION "/etc/bazzite-updater"
+    DESTINATION "/etc/fe-xico-updater"
   )
 endif()
 
