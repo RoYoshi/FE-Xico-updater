@@ -53,7 +53,7 @@ build-terra-44:
 symlink-configs:
     #!/usr/bin/env bash
     sudo rm -r /etc/fe-xico-updater
-    sudo ln -s /workspaces/FE-Xico-Updater/src/resources /etc/fe-xico-updater
+    sudo ln -s ${PWD}/src/resources /etc/fe-xico-updater
 
 [private]
 output:

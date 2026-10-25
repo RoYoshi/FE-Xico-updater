@@ -60,6 +60,8 @@ just build-flatpak
 
 The FE-Xico image build compiles and installs the application directly; see its Containerfile for the currently used build flags and dependencies.
 
+For release tooling, the RPM GitHub Actions workflow builds `fe-xico-updater.spec`. The inherited Flatpak workflow still needs a valid `.flatpak-manifest.json` before it can produce a Flatpak, and the Terra packaging recipes have not been verified in this fork.
+
 ## Status and limitations
 
 - FE-Xico Updater currently uses `uupd` and Bazzite rollback integration.
@@ -69,7 +71,7 @@ The FE-Xico image build compiles and installs the application directly; see its 
 
 ## FE-Xico branding
 
-The updater uses the `io.github.royoshi.fexicoupdater` application ID and FE-Xico's neon green (`#00FF00`) and magenta (`#FF00FF`). The packaged application icon is `io.github.royoshi.fexicoupdater.svg`. On FE-Xico systems, the OS About page also references the FE-Xico hat icon.
+The updater uses the `io.github.royoshi.fexicoupdater` application ID and FE-Xico's neon green (`#00FF00`) and magenta (`#FF00FF`). The packaged application icon is `io.github.royoshi.fexicoupdater.svg`, using the official FE-Xico hat artwork. On FE-Xico systems, the OS About page also references the FE-Xico hat icon.
 
 ## Credits and licensing
 

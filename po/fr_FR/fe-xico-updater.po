@@ -1,0 +1,597 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-28 15:23+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleDrawer.qml:61
+msgid "Copy to Clipboard"
+msgstr "Copier dans le presse-papiers"
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleDrawer.qml:64
+msgid "Text Copied"
+msgstr "Texte copié"
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleDrawer.qml:71
+msgid "Close"
+msgstr "Fermer"
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleView.qml:71
+msgid "Warning: "
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleView.qml:75
+msgid "Error: "
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleView.qml:78
+msgid "Debug: "
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/console/ConsoleView.qml:82
+msgid "Critical Error: "
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCOsRelease.qml:16
+msgctxt "button label"
+msgid "Hide os-release"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCOsRelease.qml:16
+msgctxt "button label"
+msgid "Display os-release"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:15
+msgid "Display less information"
+msgstr "Moins de détails"
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:15
+msgid "Display more information"
+msgstr "Plus de détails"
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:26
+msgid "Current Image"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:35
+msgid "Last Update"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:50
+msgid "The best drivers for your GPU are provided by the Linux kernel."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:52
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:54
+msgid "The best drivers for your GPU are "
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:56
+msgid "Your GPU is unsupported."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:75
+msgid "You have the best drivers installed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:79
+msgid "You do not have any nvidia drivers installed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:81
+msgid "You currently have nvidia installed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:83
+msgid "You currently have nvidia-open installed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:91
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:98
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:105
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:112
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:119
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:126
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:133
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:140
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:147
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:154
+msgid "loading..."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:92
+msgid "Image"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:99
+msgid "Vendor"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:106
+msgid "Ref"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:113
+msgid "Tag"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:120
+msgid "Branch"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:127
+msgid "Base Name"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:134
+msgid "Fedora Version"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:141
+msgid "Version"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:148
+msgid "Version (Pretty)"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FCSystemInfo.qml:155
+msgid "Release Date"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FormCardCollapsible.qml:37
+msgid "Read more"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/components/customFormcards/FormCardCollapsible.qml:45
+msgid "Read less"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/main.cpp:129
+msgid "Bazzite Updater"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/main.cpp:131
+msgid "Updating and rebasing utility for Bazzite"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/main.cpp:133
+msgid "© 2025-2026 Robert French"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/main.cpp:134
+msgid ""
+"This application can be used through a controller or keyboard to perform "
+"various update-related system tasks!"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/AboutDataApp.qml:8
+msgctxt "@title"
+msgid "About Application"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/AboutDataOS.qml:8
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:198
+msgctxt "About (user's OS)"
+msgid "About %1"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:20
+msgctxt "@title:window"
+msgid "Bazzite Updater"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:155
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:19
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:100
+msgid "System Update"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:167
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:28
+msgid "Other Utilities"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:177
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/RssPage.qml:23
+msgid "Changelogs"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:189
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:17
+msgid "Settings"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:207
+msgid "About Bazzite Updater"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:220
+msgid "Reboot System"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:231
+msgid "Quit"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:306
+msgctxt "@title:window"
+msgid "Reboot System"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:313
+msgid "This will reboot the system."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:318
+msgid "Reboot"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:324
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:407
+msgid "Cancel"
+msgstr "Annuler"
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:341
+msgid ""
+"The app was unable to reboot. Reboot through your system menu to apply "
+"changes."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:360
+msgid "Exit Application"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:367
+msgid "You must reboot to apply changes."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:367
+msgid "No command is running, you may exit."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:370
+msgid ""
+"You should not exit the application until the running command completes. If "
+"you exit early, it may break your system."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:372
+msgid ""
+"If you exit the application before the running command completes, it may not "
+"apply its changes."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:382
+msgid "Do not show this again"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/Main.qml:400
+msgctxt "dialog to exit the application"
+msgid "Exit"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:65
+msgid "Rollback Last Update"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:75
+msgid ""
+"This will revert the last update to your system. Your user-level files such "
+"as documents and games will not be affected."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:83
+msgid "Confirm"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:91
+msgid "Initiate Rollback"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:95
+msgid "Rollback Started"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:98
+msgid "Rollback Failed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:98
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:162
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:59
+msgid "Open console"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:100
+msgid "Rollback Succeeded!"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:114
+msgid "System Image Information"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebaseHelper.qml:120
+msgctxt "card to display info from os-release"
+msgid "Additional Information"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:16
+msgctxt "Image, such as referring to Bazzite vs Bazzite-deck"
+msgid "Rebase to New Image"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:21
+msgid "Recommended images:"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:61
+msgctxt "Image, such as referring to Bazzite vs Bazzite-deck"
+msgid "Image Options:"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:70
+msgid " (Current)"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:94
+msgid "Branch:"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:95
+msgid "stable"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:109
+msgid "testing"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:125
+msgid "do not change"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:154
+msgid "Rebase"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:154
+msgid " (Unavailable)"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/RebasePart.qml:162
+msgid "Rebase failed."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rebase_helper/rebase_helper.cpp:161
+msgid "Rollback program was not found or failed to start."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "January"
+msgstr "janvier"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "February"
+msgstr "février"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "March"
+msgstr "mars"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "April"
+msgstr "avril"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "May"
+msgstr "mai"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "June"
+msgstr "juin"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "July"
+msgstr "juillet"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "August"
+msgstr "août"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "September"
+msgstr "septembre"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "October"
+msgstr "octobre"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "November"
+msgstr "novembre"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:71
+msgid "December"
+msgstr "décembre"
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:111
+msgid "in the future"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:115
+msgid "just now"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:120
+msgid "minute ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:120
+msgid "minutes ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:126
+msgid "hour ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:126
+msgid "hours ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:132
+msgid "day ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:132
+msgid "days ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:138
+msgid "month ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:138
+msgid "months ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:143
+msgid "year ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/FCRssDelegate.qml:143
+msgid "years ago"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/RssPage.qml:45
+msgctxt "@info:placeholder"
+msgid "No changelogs have been provided."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/RssPage.qml:51
+msgctxt "@info:placeholder"
+msgid "Loading changelog"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/RssPage.qml:71
+msgctxt "@info:placeholder"
+msgid "Error loading changelogs:"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/rss_feed/RssPage.qml:76
+msgctxt "@info:placeholder"
+msgid "An error has occurred loading changelogs."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:36
+msgid "Interface Settings"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:41
+msgid "Reboot on exit reminder"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:42
+msgid ""
+"Display a popup when exiting the app after a command completes, reminding "
+"you to reboot to apply changes."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:57
+msgid "Default fullscreen state"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:58
+msgid "Should the application launch in fullscreen mode?"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:73
+msgid "Default console state"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:74
+msgid "Should the console panels start opened?"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:91
+msgid "Restore Defaults"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:100
+msgid "OS Settings (read-only)"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:106
+msgid "System Update Command"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:112
+msgid "No system rollback command is defined."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:113
+msgid "System Rollback Command"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:120
+msgid "Allow commands to be cancelled early?"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/settings/Settings.qml:127
+msgid "Changelogs RSS feed"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:49
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:113
+msgid "Update System Image and Software"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:54
+msgid "System Updating"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:56
+msgid "Update Started"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:59
+msgid "Update Failed. Check console for more details."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:66
+msgid "Update Succeeded!"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:68
+msgid "System Updated!"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:154
+msgctxt "label, last update to the system."
+msgid "Last Update"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:156
+msgid "Right now!"
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:172
+msgid "The System Update command is not defined."
+msgstr ""
+
+#: /workspaces/FE-Xico-Updater/src/pages/system_update/SystemUpdate.qml:173
+msgid "Make sure the config file (/etc/bazzite-updater/config.ini) is present."
+msgstr ""

@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                          QStringLiteral(FE_XICO_UPDATER_VERSION_STRING),
                          i18n("System update and rollback utility for FE-Xico"),
                          KAboutLicense::Unknown, // Can't directly set v2-or-later here
-                         i18n("© 2025-2026 Robert French"),
+                         i18n("© 2025-2026 Robert French; FE-Xico adaptation by RoYoshi"),
                          i18n("This application can be used through a controller or keyboard to perform various update-related system tasks!"),
                          u"https://github.com/RoYoshi/FE-Xico-Updater"_s,
                          u"https://github.com/RoYoshi/FE-Xico-Updater/issues"_s);

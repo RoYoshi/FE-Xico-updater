@@ -1,15 +1,15 @@
-%global appid io.github.rfrench3.bazzite-updater
+%global appid io.github.royoshi.fexicoupdater
 
-Name:           bazzite-updater
-Version:        0.10.0
+Name:           fe-xico-updater
+Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Update your system
 
 License:        GPL-2.0-or-later AND BSD-3-Clause AND CC0-1.0
-URL:            https://github.com/rfrench3/bazzite-updater
+URL:            https://github.com/RoYoshi/FE-Xico-Updater
 Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
 
-Packager:       Robert French <frenchrobertm@outlook.com>
+Packager:       FE-Xico project <https://github.com/RoYoshi>
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -44,11 +44,11 @@ Requires:       qqc2-breeze-style%{?_isa}
 Requires:       hicolor-icon-theme
 Requires:       systemd%{?_isa} >= 258
 
-Provides:       bazzite-updater = %{evr}
+Provides:       fe-xico-updater = %{version}-%{release}
 
 %description
 This is a convenient, easy-to-use interface for updating a Linux system.
-By default, it is configured for Bazzite.
+Configured for FE-Xico while retaining the upstream service integration.
 - Simple and powerful
 - Full support for all input types (keyboard/mouse, controller, touchscreen)
 - Configurable update and update-rollback commands
@@ -56,7 +56,7 @@ By default, it is configured for Bazzite.
 %prep
 %autosetup
 
-%conf
+%build
 %cmake
 
 %build
@@ -64,16 +64,16 @@ By default, it is configured for Bazzite.
 
 %install
 %cmake_install
-%find_lang bazzite-updater
+%find_lang fe-xico-updater
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/%{appid}.*.xml || :
 desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 
-%files -f bazzite-updater.lang
+%files -f fe-xico-updater.lang
 %license LICENSES/{BSD-3-Clause.txt,CC0-1.0.txt,GPL-2.0-or-later.txt}
 %doc README.md
-%{_bindir}/bazzite-updater
+%{_bindir}/fe-xico-updater
 %{_appsdir}/%{appid}.desktop
 %{_metainfodir}/%{appid}.*.xml
 %{_scalableiconsdir}/%{appid}.svg
@@ -85,4 +85,4 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 - Added config file support
 
 * Thu Feb 05 2026 Robert French
-- Initial rpm build of Bazzite Updater
+- Initial rpm build of FE-Xico Updater
