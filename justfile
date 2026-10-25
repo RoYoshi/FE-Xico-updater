@@ -3,7 +3,7 @@ default:
 
 # generate new translations template
 potfile:
-    cmake -DPROJECT_NAME=bazzite-updater -DSOURCE_DIR=$PWD -P $PWD/cmake/UpdateTranslations.cmake
+    cmake -DPROJECT_NAME=fe-xico-updater -DSOURCE_DIR=$PWD -P $PWD/cmake/UpdateTranslations.cmake
 
 # devcontainer
 build:
@@ -12,10 +12,10 @@ build:
 
 # devcontainer
 install-controllable:
-    cd /workspaces/bazzite-updater/src/components/controllable
+    cd /workspaces/FE-Xico-Updater/src/components/controllable
     just build
     sudo cmake --install build
-    cd /workspaces/bazzite-updater
+    cd /workspaces/FE-Xico-Updater
 
 # devcontainer
 brun:
@@ -26,7 +26,7 @@ brun:
 run:
     #!/usr/bin/env bash
     source ./build/prefix.sh
-    bazzite-updater
+    fe-xico-updater
 
 # devcontainer
 test:
@@ -40,20 +40,20 @@ update-submodules:
 # host
 build-terra:
     #!/usr/bin/env bash
-    podman run --rm --cap-add=SYS_ADMIN --privileged --volume ./packaging/terra:/anda --volume mock_cache:/var/cache/mock --workdir /anda ghcr.io/terrapkg/builder:frawhide anda build -c terra-rawhide-x86_64 bazzite-updater/pkg
+    podman run --rm --cap-add=SYS_ADMIN --privileged --volume ./packaging/terra:/anda --volume mock_cache:/var/cache/mock --workdir /anda ghcr.io/terrapkg/builder:frawhide anda build -c terra-rawhide-x86_64 fe-xico-updater/pkg
     just terra-post
 
 # host
 build-terra-44:
     #!/usr/bin/env bash
-    podman run --rm --cap-add=SYS_ADMIN --privileged --volume ./packaging/terra:/anda --volume mock_cache:/var/cache/mock --workdir /anda ghcr.io/terrapkg/builder:f44 anda build -c terra-44-x86_64 bazzite-updater/pkg
+    podman run --rm --cap-add=SYS_ADMIN --privileged --volume ./packaging/terra:/anda --volume mock_cache:/var/cache/mock --workdir /anda ghcr.io/terrapkg/builder:f44 anda build -c terra-44-x86_64 fe-xico-updater/pkg
     just terra-post
 
 # devcontainer, copy src/resources to proper location
 symlink-configs:
     #!/usr/bin/env bash
-    sudo rm -r /etc/bazzite-updater
-    sudo ln -s /workspaces/bazzite-updater/src/resources /etc/bazzite-updater
+    sudo rm -r /etc/fe-xico-updater
+    sudo ln -s /workspaces/FE-Xico-Updater/src/resources /etc/fe-xico-updater
 
 [private]
 output:

@@ -7,8 +7,8 @@
         "WAYLAND_DISPLAY": "${localEnv:WAYLAND_DISPLAY}",
         "XDG_RUNTIME_DIR": "${localEnv:XDG_RUNTIME_DIR}",
         "XDG_SESSION_TYPE": "${localEnv:XDG_SESSION_TYPE}",
-        "QML_IMPORT_PATH": "/workspaces/bazzite-updater/build/bin",
-        "QML2_IMPORT_PATH": "/workspaces/bazzite-updater/build/bin",
+        "QML_IMPORT_PATH": "${containerWorkspaceFolder}/build/bin",
+        "QML2_IMPORT_PATH": "${containerWorkspaceFolder}/build/bin",
     },
     "privileged": true,
     "mounts": [

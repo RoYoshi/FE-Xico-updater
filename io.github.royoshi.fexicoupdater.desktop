@@ -3,7 +3,7 @@
 
 [Desktop Entry]
 Name=FE-Xico Updater
-Comment=Update your system
+Comment=Update and manage FE-Xico system deployments
 Exec=fe-xico-updater
 Icon=io.github.royoshi.fexicoupdater
 Type=Application
