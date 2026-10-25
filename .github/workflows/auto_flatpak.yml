@@ -1,7 +1,4 @@
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
 name: Build Flatpak
 permissions:
@@ -15,6 +12,9 @@ jobs:
       options: --privileged
     steps:
     - uses: actions/checkout@v4
+    - name: Check FE-Xico Flatpak manifest
+      run: |
+        test -f .flatpak-manifest.json || { echo '::error::Flatpak manifest is not yet included in FE-Xico Updater'; exit 1; }
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: FE-Xico-Updater.flatpak

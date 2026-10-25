@@ -4,7 +4,7 @@
 
 This is a **work in progress**, adapted from [Bazzite Updater](https://github.com/rfrench3/bazzite_updater). The application is FE-Xico-branded, but it currently delegates updates and rollback to existing system utilities; it is not an independent replacement for those utilities.
 
-![Updater console](screenshots/update_drawer.png)
+![FE-Xico hat branding](io.github.royoshi.fexicoupdater.svg)
 
 ## Current behavior
 
@@ -51,12 +51,15 @@ git clone --recurse-submodules https://github.com/RoYoshi/FE-Xico-Updater.git
 cd FE-Xico-Updater
 ```
 
-This project uses CMake, Qt 6, KDE Frameworks 6, Kirigami, SDL3, and the `controllable` submodule. The upstream-derived `justfile` includes development targets such as:
+This project uses CMake, Qt 6, KDE Frameworks 6, Kirigami, SDL3, and the `controllable` submodule. The developer `justfile` provides local build, run, and translation tasks. For example:
 
 ```bash
-just build-rpm
-just build-flatpak
+just update-submodules
+just build
+just run
 ```
+
+Experimental Terra recipes are available through `just build-terra` and `just build-terra-44`; they have not been verified in this fork.
 
 The FE-Xico image build compiles and installs the application directly; see its Containerfile for the currently used build flags and dependencies.
 

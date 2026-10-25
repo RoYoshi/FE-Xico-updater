@@ -3,7 +3,7 @@
 Name:           fe-xico-updater
 Version:        0.1.0
 Release:        1%{?dist}
-Summary:        Update your system
+Summary:        Update and manage FE-Xico deployments
 
 License:        GPL-2.0-or-later AND BSD-3-Clause AND CC0-1.0
 URL:            https://github.com/RoYoshi/FE-Xico-Updater
@@ -58,8 +58,6 @@ Configured for FE-Xico while retaining the upstream service integration.
 
 %build
 %cmake
-
-%build
 %cmake_build
 
 %install
@@ -85,4 +83,4 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 - Added config file support
 
 * Thu Feb 05 2026 Robert French
-- Initial rpm build of FE-Xico Updater
+- Upstream initial RPM packaging, later adapted for FE-Xico
