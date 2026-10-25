@@ -47,7 +47,10 @@ AppConfig::AppConfig()
 
         // Process specific values
         if (aboutOs[u"version"_s].toString() == u"@VERSION@"_s) {
-            if (osRelease.keys().contains(u"VERSION"_s))
+            // FE-Xico has its own image version; retain the upstream fallback.
+            if (osRelease.keys().contains(u"FE_XICO_VERSION"_s))
+                aboutOs.insert(u"version"_s, osRelease[u"FE_XICO_VERSION"_s]);
+            else if (osRelease.keys().contains(u"VERSION"_s))
                 aboutOs.insert(u"version"_s, osRelease[u"VERSION"_s]);
             else if (osRelease.keys().contains(u"VERSION_ID"_s))
                 aboutOs.insert(u"version"_s, osRelease[u"VERSION_ID"_s]);

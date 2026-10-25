@@ -1,151 +1,158 @@
 {
     "displayName": "FE-Xico",
-    "shortDescription": "The operating system for the next generation of gamers",
+    "shortDescription": "FE-Xico, a customized Fedora Atomic desktop image",
     "homepage": "https://github.com/RoYoshi/FE-Xico",
     "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
     "version": "@VERSION@",
-    "otherText": "FE-Xico is a Fedora Atomic desktop refined for performance, control, and everyday use.",
+    "otherText": "FE-Xico is a custom Fedora Atomic desktop image. The updater is based on Bazzite Updater and retains integration with Universal Blue components.",
     "authors": [
         {
+            "name": "RoYoshi",
+            "task": "FE-Xico creator and integration maintainer",
+            "emailAddress": "",
+            "webAddress": "https://github.com/RoYoshi"
+        }
+    ],
+    "credits": [
+        {
             "name": "Kyle Gospodnetich",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://kylegospodneti.ch/"
         },
         {
             "name": "EyeCantCU",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/EyeCantCU"
         },
         {
             "name": "HikariKnight",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/HikariKnight"
         },
         {
             "name": "aarron-lee",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/aarron-lee"
         },
         {
             "name": "castrojo",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/castrojo"
         },
         {
             "name": "bsherman",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/bsherman"
         },
         {
             "name": "noelmiller",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/noelmiller"
         },
         {
             "name": "nicknamenamenick",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/nicknamenamenick"
         },
         {
             "name": "Zeglius",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/Zeglius"
         },
         {
             "name": "BoukeHaarsma23",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/BoukeHaarsma23"
         },
         {
             "name": "matte-schwartz",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/matte-schwartz"
         },
         {
             "name": "gerblesh",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/gerblesh"
         },
         {
             "name": "abanna",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/abanna"
         },
         {
             "name": "ameliasvg",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/ameliasvg"
         },
         {
             "name": "SuperRiderTH",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/SuperRiderTH"
         },
         {
             "name": "CharlieBros",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/CharlieBros"
         },
         {
             "name": "xXJSONDeruloXx",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/xXJSONDeruloXx"
         },
         {
             "name": "m2Giles",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/m2Giles"
         },
         {
             "name": "fiftydinar",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/fiftydinar"
         },
         {
             "name": "EPOCHvoyager",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/EPOCHvoyager"
         },
         {
             "name": "RodoMa92",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/RodoMa92"
         },
         {
             "name": "renner0e",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/renner0e"
         },
         {
             "name": "And many more!",
-            "task": "Maintainer",
+            "task": "Upstream Bazzite contributor",
             "emailAddress": "",
             "webAddress": "https://github.com/ublue-os/bazzite/graphs/contributors"
         }
     ],
-    "credits": [],
     "translators": [],
     "licenses": [
         {
@@ -155,5 +162,5 @@
         }
     ],
     "copyrightStatement": "© 2023-@CURRENT_YEAR@",
-    "programLogo": "/usr/share/icons/hicolor/scalable/places/distributor-logo.svg"
+    "programLogo": "/usr/share/icons/hicolor/scalable/apps/FE-XicoHat.svg"
 }

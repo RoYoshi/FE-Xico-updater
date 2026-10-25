@@ -14,7 +14,7 @@ import io.github.rfrench3.controllable as GP
 FC.FormCardPage {
     id: page
 
-    readonly property color feXicoGreen: "#39FF14"
+    readonly property color feXicoGreen: "#00FF00"
     readonly property color feXicoMagenta: "#FF00FF"
 
     title:

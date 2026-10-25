@@ -1,84 +1,78 @@
-<h1>Bazzite Updater</h1>
+# FE-Xico Updater
 
-<h2 align="center">A Graphical Frontend for the updating and rebasing tools used by Bazzite, configurable for any Linux distro!</h2>
+**FE-Xico Updater** is a Qt 6 / KDE Kirigami graphical frontend for system updates and deployment recovery on [FE-Xico](https://github.com/RoYoshi/FE-Xico). It supports keyboard, mouse, touchscreen, and controller interaction.
 
-![Updating Screen](screenshots/update_drawer.png)
+This is a **work in progress**, adapted from [Bazzite Updater](https://github.com/rfrench3/bazzite_updater). The application is FE-Xico-branded, but it currently delegates updates and rollback to existing system utilities; it is not an independent replacement for those utilities.
 
-<h1 align="center">Features</h1>
+![Updater console](screenshots/update_drawer.png)
 
-<p>This is a convenient, easy-to-use interface for updating your Linux system.</p>
+## Current behavior
 
-- Simple and powerful
-- Full support for all input types (keyboard/mouse, controller, touchscreen)
+- Start the configured system-update service and display live command output.
+- Show command success or failure and offer reboot guidance.
+- Provide a rollback interface using the system's configured rollback helper.
+- Display operating-system and image information, when available.
+- Support controller navigation, fullscreen operation, and KDE color integration.
 
-<br>
+## FE-Xico integration
 
-<h1 align="center">Icons</h1>
+The [FE-Xico image Containerfile](https://github.com/RoYoshi/FE-Xico/blob/main/Containerfile) builds this repository as a Git submodule and installs the resulting application into FE-Xico.
 
-<p>The custom icons used by this app come from Bazzite.</p>
+The default commands in [`src/resources/config.ini`](src/resources/config.ini) are:
 
-- https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/share/ublue-os/bazzite/update.svg
-- https://github.com/ublue-os/bazzite/blob/main/system_files/desktop/shared/usr/share/ublue-os/bazzite/logo.svg
-
-<br>
-
-<h1 align="center">Requirements</h1>
-
-By default, this interface is configured to use bazzite's `uupd` system service for updating and `bazzite-rollback-helper` for rolling back updates.
-
-- systemd version >= 258 is required for the pre-configured "service-as-program.sh" script to function.
-- This is not tested with versions of kirigami older than 6.27.0 and kirigami-addons older than 1.12.0.
-
-<br>
-
-<h1 align="center">Where to Install the Latest Release</h1>
-
-The app is available in [Terra](https://docs.terrapkg.com/usage/installing/). Once the installation instructions are met, the package will be available as `bazzite-updater`.
-
-```bash
-sudo dnf install bazzite-updater
-```
-
-It is also posted to the github releases.
-
-- https://github.com/rfrench3/bazzite_updater/releases
-
-<br>
-
-<h1 align="center">Configuration</h1>
-
-In `/etc/bazzite-updater`, edit `config.ini` to change your update/rollback commands and edit `KAboutData_OS.json` (if desired) to match your Linux distro. Here is an example config.ini for Arch Linux:
-
-```config.ini
+```ini
 [Commands]
-systemUpdateCommand=pkexec pacman -Syu
-systemRollbackCommand=
+systemUpdateCommand=./service-as-program.sh uupd-manual.service
+systemRollbackCommand=bazzite-rollback-helper rollback -y
 ```
 
-If you leave systemRollbackCommand blank (but still present!), it will hide that portion of the UI.
+The `service-as-program.sh` helper starts the named systemd service and streams its journal output. `uupd-manual.service` is the GUI's default update target; the separately scheduled `uupd.service` may share the underlying system updater. A healthy graphical frontend does not by itself establish that either service can successfully upgrade the installed image.
 
-<p>Preferences that only affect the interface, like the reboot reminder shown on exit, are in the app's <b>Settings</b> page and get stored in <code>~/.config/bazzite-updaterrc</code>. Commands are never read from the home directory.</p>
+FE-Xico's default system update workflow therefore still depends on **Universal Blue's `uupd`**. Rollback still uses the inherited `bazzite-rollback-helper`. Both may be replaced later, but these dependencies should not be removed until a tested replacement is available.
 
-<br>
+## Configuration
 
-<h1 align="center">License</h1>
+The image installs the application configuration under `/etc/fe-xico-updater/` by default:
 
-<p>GPL-2.0-or-later. See LICENSES for details.</p>
+- `config.ini` — update and rollback commands, and release-feed settings.
+- `KAboutData_OS.json` — operating-system information displayed in the UI.
+- `service-as-program.sh` — helper for running systemd service jobs.
 
-<br>
+User-interface preferences, including the reboot reminder, are stored separately in `~/.config/fe-xico-updaterrc`. Update commands are read from the system configuration, not from the user's home directory.
 
-<h1 align="center">Developer Instructions</h1>
+Leave `systemRollbackCommand` empty to hide the rollback action. Do not point the update command at an untested service; update jobs may need elevated privileges and should not be interrupted mid-deployment.
 
-I develop this project in a devcontainer with Zed and test it on bazzite by installing it as an RPM. A justfile is present for specific scripts, which can be easily run using `just`.
+## Building
+
+Clone with Git submodules:
 
 ```bash
-just build-flatpak
+git clone --recurse-submodules https://github.com/RoYoshi/FE-Xico-Updater.git
+cd FE-Xico-Updater
+```
+
+This project uses CMake, Qt 6, KDE Frameworks 6, Kirigami, SDL3, and the `controllable` submodule. The upstream-derived `justfile` includes development targets such as:
+
+```bash
 just build-rpm
+just build-flatpak
 ```
 
-To test as an rpm:
+The FE-Xico image build compiles and installs the application directly; see its Containerfile for the currently used build flags and dependencies.
 
-```bash
-sudo bootc usroverlay
-sudo dnf install the/rpm/package.rpm
-```
+## Status and limitations
+
+- FE-Xico Updater currently uses `uupd` and Bazzite rollback integration.
+- Update success depends on the underlying OS deployment state. In particular, local `rpm-ostree` modifications can prevent `bootc`-managed upgrades.
+- Automated C++/QML tests are not yet enabled in CMake; verify update and rollback behavior on a test deployment.
+- Some release, driver, and image-information views still depend on Universal Blue/Bazzite metadata.
+
+## FE-Xico branding
+
+The updater uses the `io.github.royoshi.fexicoupdater` application ID and FE-Xico's neon green (`#00FF00`) and magenta (`#FF00FF`). The packaged application icon is `io.github.royoshi.fexicoupdater.svg`. On FE-Xico systems, the OS About page also references the FE-Xico hat icon.
+
+## Credits and licensing
+
+Adapted from [Bazzite Updater by Robert French and contributors](https://github.com/rfrench3/bazzite_updater). FE-Xico-specific branding and integration are maintained here. The original source copyright notices and license information are retained.
+
+See [`LICENSES/`](LICENSES/) for the licenses covering the included code and resources. The application is generally licensed under **GPL-2.0-or-later**, with some components carrying their own notices.
