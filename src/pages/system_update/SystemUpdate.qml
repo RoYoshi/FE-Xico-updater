@@ -18,7 +18,7 @@ Kirigami.Page {
     // FE-Xico branding
     // ─────────────────────────────────────────────────────────
 
-    readonly property color feXicoGreen: "#39FF14"
+    readonly property color feXicoGreen: "#00FF00"
     readonly property color feXicoMagenta: "#FF00FF"
     readonly property color feXicoSilver: "#C0C0C0"
 
