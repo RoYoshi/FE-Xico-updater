@@ -1,6 +1,6 @@
 {
     "displayName": "FE-Xico",
-    "shortDescription": "The operating system for the next generation of gamers",
+    "shortDescription": "FE-Xico, a customized Fedora Atomic desktop image",
     "homepage": "https://github.com/RoYoshi/FE-Xico",
     "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
     "version": "@VERSION@",
@@ -155,5 +155,5 @@
         }
     ],
     "copyrightStatement": "© 2023-@CURRENT_YEAR@",
-    "programLogo": "/usr/share/icons/hicolor/scalable/places/distributor-logo.svg"
+    "programLogo": "/usr/share/icons/hicolor/scalable/apps/FE-XicoHat.svg"
 }
