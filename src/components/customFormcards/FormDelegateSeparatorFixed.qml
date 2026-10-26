@@ -8,7 +8,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
-// TODO: This fix has been upstreamed. Once it is available in fedora, remove this component.
+// TODO: This fix has been upstreamed. Once it is available in fedora, remove this component. Available in kirigami-addons 1.14.0
 
 /*!
    \qmltype FormDelegateSeparator
