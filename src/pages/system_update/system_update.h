@@ -40,27 +40,14 @@ class SystemUpdateBackend : public QObject
 
     int m_progressLevel = 0;
     bool m_blockUpdate = false;
-    QProcess m_journalctlProcess;
-
-    struct UpdateErrors {
-        bool System_Update = false;
-        bool Brew_Update = false;
-        bool System_Apps = false;
-        bool Apps_for_User = false;
-        bool Distroboxes_for_User = false;
-        bool Unknown_Error = false;
-    };
-
-    UpdateErrors m_updateErrorStatus;
-
-    QString m_placeholderTextColor;
-
 public:
     SystemUpdateBackend(QObject *parent = nullptr);
 
     Console::Model *m_console;
 
     Q_INVOKABLE void runUpdate(QJSValue callback);
+    Q_INVOKABLE void checkUpdates(QJSValue callback);
+    Q_INVOKABLE void refreshStatus(QJSValue callback);
 
     int progressLevel() const
     {

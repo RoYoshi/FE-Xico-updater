@@ -13,6 +13,8 @@ target_sources(fe-xico-updater
     main.cpp
     utils.h
     utils.cpp
+    native_operation.cpp
+    native_operation.h
     resources.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/system_update.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/system_update.h
@@ -28,6 +30,7 @@ target_sources(fe-xico-updater
 
 target_include_directories(fe-xico-updater
     PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rebase_helper
     ${CMAKE_CURRENT_SOURCE_DIR}/components/console

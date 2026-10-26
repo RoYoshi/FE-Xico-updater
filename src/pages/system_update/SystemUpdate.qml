@@ -81,40 +81,10 @@ Kirigami.Page {
             && (AppConfig.ini.Commands?.systemUpdateCommand || "")
 
         onTriggered: {
-            sessionStorage.mainText = i18n("Updating FE-Xico…");
-
-            showPassiveNotification(
-                i18n("FE-Xico update started."),
-                Kirigami.short
-            );
-
-            SystemUpdateBackend.runUpdate(callback => {
-                if (callback != 0) {
-                    showPassiveNotification(
-                        i18n(
-                            "FE-Xico update failed. "
-                            + "Check the console for more details."
-                        ),
-                        Kirigami.long,
-                        i18n("Open Console")
-                            + GP.Labels.spacer
-                            + GP.Labels.north,
-                        () => {
-                            consoleDrawer.drawerOpen = true;
-                        }
-                    );
-
-                    sessionStorage.mainText = "";
-                    return;
-                }
-
-                showPassiveNotification(
-                    i18n("FE-Xico update completed successfully."),
-                    Kirigami.short
-                );
-
-                sessionStorage.updateCompleted = true;
-                sessionStorage.mainText = i18n("Update Ready");
+            SystemUpdateBackend.runUpdate(function(code) {
+                showPassiveNotification(AppState.resultMessage, code === 0 ? Kirigami.short : Kirigami.long);
+                if (code !== 0)
+                    consoleDrawer.drawerOpen = true;
             });
         }
     }
@@ -248,40 +218,9 @@ Kirigami.Page {
                     Kirigami.Heading {
                         level: 3
 
-                        text: {
-                            if (AppState.updateRunning)
-                                return i18n("Updating FE-Xico");
-
-                            if (AppState.commandSucceeded)
-                                return i18n("Update Ready");
-
-                            return i18n("FE-Xico System");
-                        }
-                    }
-
-                    QQC2.Label {
-                        Layout.fillWidth: true
-
-                        wrapMode: Text.WordWrap
-
-                        text: {
-                            if (AppState.updateRunning)
-                                return i18n(
-                                    "The latest FE-Xico image and "
-                                    + "software updates are being applied."
-                                );
-
-                            if (AppState.commandSucceeded)
-                                return i18n(
-                                    "The new deployment is staged. "
-                                    + "Restart the system to apply it."
-                                );
-
-                            return i18n(
-                                "Check for a newer FE-Xico image "
-                                + "and update your installed software."
-                            );
-                        }
+                        text: AppState.resultMessage || i18n(
+                            "Check for and stage FE-XicoOS image updates. Flatpak apps are managed separately in your app store."
+                        )
 
                         opacity: 0.75
                     }
@@ -344,8 +283,7 @@ Kirigami.Page {
                     level: 2
 
                     text:
-                        sessionStorage.mainText
-                        || i18n("System Update")
+                        i18n("System Update")
                 }
 
                 QQC2.Label {
@@ -378,7 +316,7 @@ Kirigami.Page {
                         return i18n("Updating FE-Xico…");
 
                     if (AppState.commandSucceeded)
-                        return i18n("FE-Xico Updated");
+                        return i18n("Update FE-Xico");
 
                     return i18n("Update FE-Xico");
                 }
@@ -415,8 +353,7 @@ Kirigami.Page {
                             source: "checkmark-symbolic"
 
                             visible:
-                                sessionStorage.updateCompleted
-                                || false
+                                AppState.commandSucceeded
 
                             color: page.feXicoGreen
                         }
@@ -435,38 +372,30 @@ Kirigami.Page {
                     !AppState.updateRunning
                     && !AppState.commandSucceeded
 
-                description: {
-                    const lastUpdate =
-                        i18nc(
-                            "label, last update to the system.",
-                            "Last Update"
-                        )
-                        + ": ";
+                description: i18n("Stages the OS image only. Your running deployment is unchanged until reboot.")
+            }
 
-                    if (sessionStorage.updateCompleted)
-                        return lastUpdate + i18n("Right now!");
+            FormDelegateSeparatorFixed {}
 
-                    if (
-                        RebaseHelperBackend
-                            .currentImage
-                            .load_successful
-                    ) {
-                        return lastUpdate
-                            + RebaseHelperBackend
-                                .currentImage
-                                .datePretty["day"]
-                            + " "
-                            + RebaseHelperBackend
-                                .currentImage
-                                .datePretty["month"]
-                            + ", "
-                            + RebaseHelperBackend
-                                .currentImage
-                                .datePretty["year"];
-                    }
+            FC.FormButtonDelegate {
+                text: i18n("Check for OS Updates")
+                description: i18n("Fetch image metadata without staging a deployment.")
+                enabled: AppState.allowCommands && !!(AppConfig.ini.Commands?.systemCheckCommand || "")
+                onClicked: SystemUpdateBackend.checkUpdates(function(code) {
+                    showPassiveNotification(AppState.resultMessage, Kirigami.long);
+                    if (code !== 0) consoleDrawer.drawerOpen = true;
+                })
+            }
 
-                    return "";
-                }
+            FormDelegateSeparatorFixed {}
+
+            FC.FormButtonDelegate {
+                text: i18n("Refresh Deployment Status")
+                enabled: AppState.allowCommands && !!(AppConfig.ini.Commands?.systemStatusCommand || "")
+                onClicked: SystemUpdateBackend.refreshStatus(function(code) {
+                    showPassiveNotification(AppState.resultMessage, Kirigami.long);
+                    if (code !== 0) consoleDrawer.drawerOpen = true;
+                })
             }
 
             FormDelegateSeparatorFixed {
@@ -532,14 +461,11 @@ Kirigami.Page {
                     if (AppState.updateRunning)
                         return i18n(
                             "Preparing the latest "
-                            + "FE-Xico deployment…"
+                            + "FE-XicoOS operation…"
                         );
 
                     if (AppState.commandSucceeded)
-                        return i18n(
-                            "Restart to boot into "
-                            + "the updated deployment."
-                        );
+                        return AppState.rebootRequired ? i18n("Restart when ready to apply the pending deployment.") : i18n("No restart is needed.");
 
                     return "";
                 }

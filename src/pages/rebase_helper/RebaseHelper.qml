@@ -90,14 +90,14 @@ FC.FormCardPage {
         id: rollbackFC
 
         visible:
-            AppConfig.ini.Commands.systemRollbackCommand
+            AppConfig.ini.Commands?.systemRollbackCommand
             || ""
 
         FC.FormTextDelegate {
             text: i18n(
-                "Rollback returns FE-Xico to the previous system deployment. "
-                + "Your personal files, documents, games, and other user data "
-                + "will not be removed."
+                "Rollback queues the previous system deployment for the next boot. "
+                + "User data under /var is shared, while /etc configuration returns to the previous deployment's state. "
+                + "A pending update will not be discarded; rollback is refused while one is staged."
             )
 
             textItem.wrapMode: Text.Wrap
@@ -147,10 +147,7 @@ FC.FormCardPage {
                         );
                     } else {
                         showPassiveNotification(
-                            i18n(
-                                "Rollback completed. "
-                                + "Restart to boot the previous deployment."
-                            ),
+                            AppState.resultMessage,
                             Kirigami.short
                         );
 
@@ -171,11 +168,21 @@ FC.FormCardPage {
 
     FC.FormHeader {
         title: i18n("Current Deployment")
-        visible:
-            RebaseHelperBackend.currentImage.load_successful
+        visible: true
     }
 
     FCSystemInfo {}
+
+    FC.FormCard {
+        FC.FormButtonDelegate {
+            text: i18n("Refresh Deployment Status")
+            enabled: AppState.allowCommands && !!(AppConfig.ini.Commands?.systemStatusCommand || "")
+            onClicked: RebaseHelperBackend.refreshStatus(function(code) {
+                showPassiveNotification(AppState.resultMessage, Kirigami.long);
+                if (code !== 0) consoleDrawer.drawerOpen = true;
+            })
+        }
+    }
 
     FC.FormHeader {
         title: i18n("System Information")

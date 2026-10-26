@@ -22,8 +22,7 @@ XmlListModel {
         return options[2];
     }
 
-    source:
-        AppConfig.ini.General?.rssFeed
+    source: QmlSmokeTest ? "" : (AppConfig.ini.General?.rssFeed || "")
 
     query:
         chooseType([

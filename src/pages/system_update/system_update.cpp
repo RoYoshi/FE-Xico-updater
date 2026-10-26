@@ -23,6 +23,7 @@
 #include "k_config.h"
 #include "system_update.h"
 #include "utils.h"
+#include "native_operation.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -46,77 +47,19 @@ SystemUpdateBackend::SystemUpdateBackend(QObject *parent)
     m_console = new Console::Model(this);
 }
 
-void SystemUpdateBackend::runUpdate(QJSValue callback = QJSValue())
+void SystemUpdateBackend::runUpdate(QJSValue callback)
 {
-    if (!callback.isCallable()) {
-        qDebug() << "Callback is not callable, command run refused";
-        return;
-    }
+    runNativeOperation(m_console, configIni.getValue(u"Commands"_s, u"systemUpdateCommand"_s), u"upgrade"_s, callback);
+}
 
-    auto onFinish = [=, this](int exit_code) {
-        const auto conclude = [=](int code, bool command) {
-            callback.call({code});
-            appState.setUpdateRunning(false);
-            appState.setCommandSucceeded(command);
-            return;
-        };
+void SystemUpdateBackend::checkUpdates(QJSValue callback)
+{
+    runNativeOperation(m_console, configIni.getValue(u"Commands"_s, u"systemCheckCommand"_s), u"check"_s, callback);
+}
 
-        // Check for errors
-        if (exit_code != 0) {
-            conclude(1, false);
-            qWarning() << "Update failed with exit code " << exit_code;
-            m_console->newLine(u"The update has failed: exit code %1"_s.arg(exit_code), Console::LogLevel::Error);
-            return;
-        }
-
-        conclude(0, true);
-    };
-
-    auto onError = [=](QProcess::ProcessError error) {
-        qWarning() << "Update errored with ProcessError " << error;
-        callback.call({1});
-        appState.setUpdateRunning(false);
-        appState.setCommandSucceeded(false);
-    };
-
-    auto parser = [=, this](QString line, Console::LogLevel lvl) {
-        if (line.isEmpty())
-            return;
-
-        if (!line.startsWith(u'{')) {
-            auto out = formatForConsole(line);
-            if (!out.trimmed().isEmpty())
-                m_console->newLine(out.trimmed(), lvl);
-            return;
-        }
-
-        auto json = QJsonDocument::fromJson(line.toUtf8()).object();
-
-        if (!(json.contains(u"level"_s) && json.contains(u"msg"_s)))
-            return;
-
-        QString level = json.value(u"level"_s).toString();
-        QString msg = json.value(u"msg"_s).toString();
-
-        using namespace Console;
-        LogLevel log_level = LogLevel::Warn;
-
-        if (level == u"INFO"_s)
-            log_level = LogLevel::Info;
-        else if (level == u"DEBUG"_s)
-            log_level = LogLevel::Debug;
-        else if (level == u"WARN"_s)
-            log_level = LogLevel::Warn;
-        else if (level == u"ERROR"_s)
-            log_level = LogLevel::Error;
-
-        auto out = formatForConsole(msg);
-        if (!out.trimmed().isEmpty())
-            m_console->newLine(out, log_level);
-    };
-
-    appState.setUpdateRunning(true);
-    m_console->runProcess(configIni.getValue(u"Commands"_s, u"systemUpdateCommand"_s).split(u' '), onFinish, onError, parser);
+void SystemUpdateBackend::refreshStatus(QJSValue callback)
+{
+    runNativeOperation(m_console, configIni.getValue(u"Commands"_s, u"systemStatusCommand"_s), u"status"_s, callback);
 }
 
 void SystemUpdateBackend::setProgressLevel(int progressLevel)

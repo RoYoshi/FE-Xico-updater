@@ -56,7 +56,8 @@ public:
     Q_INVOKABLE void copyToClipboard() const;
 
     // Runs the defined process until completion. Does not use custom LogLevel logic.
-    // onFinish and onError can be provided to run custom logic upon QProcess::finished and QProcess::errorOccurred.
+    // onFinish runs exactly once, including FailedToStart/crashes (code -1).
+    // onError is optional diagnostic notification, not a second completion.
     // customFormatter can be used to edit/reject lines of text before they are sent to the view.
     void runProcess(QStringList process,
                     function<void(int)> onFinish = nullptr,

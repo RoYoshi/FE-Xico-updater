@@ -12,6 +12,8 @@
 #include <QScreen>
 #include <QStyleHints>
 #include <QUrl>
+#include <QTimer>
+#include <QQmlError>
 
 #include "version-fe-xico-updater.h"
 #include <KAboutData>
@@ -128,17 +130,33 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     KLocalization::setupLocalizedContext(&engine);
-    engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
-
-    if (engine.rootObjects().isEmpty()) {
-        return EXIT_FAILURE;
-    }
-
-    // For non-critical data storage
+    // Context must exist before components evaluate bindings/onCompleted.
     auto sessionStorage = QQmlPropertyMap::create(&app);
     engine.rootContext()->setContextProperty(u"sessionStorage"_s, sessionStorage);
-
     engine.rootContext()->setContextProperty(u"UseFullscreen"_s, UseFullscreen);
+    const bool smokeTest = app.arguments().contains(u"--qml-smoke-test"_s);
+    engine.rootContext()->setContextProperty(u"QmlSmokeTest"_s, smokeTest);
+    bool qmlFailed = false;
+    QObject::connect(&engine, &QQmlEngine::warnings, &app, [&qmlFailed](const QList<QQmlError> &) {
+        qmlFailed = true;
+    });
+    engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
+    if (engine.rootObjects().isEmpty())
+        return EXIT_FAILURE;
+    if (smokeTest) {
+        auto *timer = new QTimer(&app);
+        timer->setInterval(150);
+        int page = 0;
+        QObject::connect(timer, &QTimer::timeout, &app, [&, page]() mutable {
+            if (page == 6) {
+                app.exit(qmlFailed ? EXIT_FAILURE : EXIT_SUCCESS);
+                return;
+            }
+            if (!QMetaObject::invokeMethod(engine.rootObjects().first(), "smokeTestPage", Q_ARG(QVariant, page++)))
+                qmlFailed = true;
+        });
+        timer->start();
+    }
 
     return app.exec();
 }
@@ -147,6 +165,7 @@ void commandLine(char *argv[], QCoreApplication &app)
 {
     QCommandLineParser parser;
     parser.addHelpOption();
+    parser.addOption(QCommandLineOption(u"qml-smoke-test"_s, u"Load local GUI pages and exit without running operations."_s));
 
     QCommandLineOption update(u"update"_s, u"Performs the configured system update command."_s);
     QCommandLineOption rollback(u"rollback"_s, u"Performs the configured system rollback command."_s);
@@ -181,6 +200,9 @@ void commandLine(char *argv[], QCoreApplication &app)
     }
 
     const auto args = QProcess::splitCommand(cmd);
+
+    if (args.isEmpty() || args.first().isEmpty())
+        exit(EXIT_FAILURE);
 
     // prepare arguments for execvp
     QList<char *> execArgs;

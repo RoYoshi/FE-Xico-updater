@@ -1,0 +1,50 @@
+name: Native FE-XicoOS updater tests
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [fix/native-bootc-reliability]
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    container: fedora:44
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Fedora Qt/KDE build and runtime dependencies
+        run: |
+          dnf5 -y install cmake ninja-build gcc-c++ git python3 extra-cmake-modules pkgconf-pkg-config gettext mesa-libGLU-devel SDL3-devel qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtsvg-devel kf6-kirigami-devel kf6-kirigami-addons-devel kf6-kcoreaddons-devel kf6-kconfig-devel kf6-kcolorscheme-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-qqc2-desktop-style dbus-daemon
+      - name: Configure and compile native application and tests
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -D_USE_XDG_CONFIG=ON -D_INCLUDE_SUBMODULES=ON -DBUILD_TESTING=ON
+          cmake --build build --parallel 4
+      - name: Qt process and native result tests
+        run: ctest --test-dir build --output-on-failure
+      - name: Install and load every QML page offscreen
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake --install build
+          export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-smoke.log
+      - name: Missing configuration and untrusted XDG directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mv /usr/etc/xdg/fe-xico-updater /tmp/saved-system-config
+          mkdir -p /tmp/untrusted/fe-xico-updater
+          printf '[Commands]\nsystemUpdateCommand=/does-not-exist\n' > /tmp/untrusted/fe-xico-updater/config.ini
+          export XDG_CONFIG_DIRS=/tmp/untrusted
+          export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-no-config.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-updater-test-logs
+          path: |
+            build/Testing/Temporary/LastTest.log
+            qml-*.log

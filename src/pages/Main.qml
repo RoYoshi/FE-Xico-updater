@@ -18,6 +18,14 @@ import io.github.rfrench3.controllable as GP
 StatefulApp.StatefulWindow {
     id: root
 
+    // Isolated QML load test; never starts an update or authentication request.
+    function smokeTestPage(index) {
+        if (!QmlSmokeTest)
+            return;
+        const pages = ["SystemUpdate.qml", "RebaseHelper.qml", "Settings.qml", "AboutDataOS.qml", "AboutDataApp.qml", "RssPage.qml"];
+        pageStack.replace(Qt.resolvedUrl(pages[index]));
+    }
+
     // ─────────────────────────────────────────────────────────
     // FE-Xico identity
     // ─────────────────────────────────────────────────────────
@@ -301,17 +309,17 @@ StatefulApp.StatefulWindow {
                 id: actionReboot
 
                 text: (
-                    AppState.commandSucceeded
-                        ? i18n("Restart to Apply Update")
+                    AppState.rebootRequired
+                        ? i18n("Restart to Apply Deployment")
                         : i18n("Reboot System")
                 ) + GP.Labels.spacer + GP.Labels.north
 
                 icon.name:
-                    AppState.commandSucceeded
+                    AppState.rebootRequired
                         ? "system-shutdown-update-symbolic"
                         : "system-shutdown-symbolic"
 
-                enabled: !AppState.commandRunning
+                enabled: AppState.allowCommands
 
                 onTriggered: {
                     rebootDialog.open();
@@ -339,7 +347,7 @@ StatefulApp.StatefulWindow {
                     if (
                         AppState.commandRunning
                         || (
-                            AppState.commandSucceeded
+                            AppState.rebootRequired
                             && UserSettings.showRebootReminder
                         )
                     ) {
@@ -428,16 +436,16 @@ StatefulApp.StatefulWindow {
     AppDialog {
         id: rebootDialog
 
-        title: AppState.commandSucceeded
-            ? i18nc("@title:window", "Apply FE-Xico Update")
+        title: AppState.rebootRequired
+            ? i18nc("@title:window", "Apply FE-Xico Deployment")
             : i18nc("@title:window", "Reboot System")
 
         standardButtons: Kirigami.Dialog.NoButton
 
-        enabled: !AppState.commandRunning
+        enabled: AppState.allowCommands
         activeDialogParent: root
 
-        subtitle: AppState.commandSucceeded
+        subtitle: AppState.rebootRequired
             ? i18n(
                 "Restart the system to boot into the newly staged FE-Xico deployment."
             )
@@ -452,12 +460,15 @@ StatefulApp.StatefulWindow {
                     + GP.Labels.spacer
                     + GP.Labels.south
 
-                icon.name: AppState.commandSucceeded
+                icon.name: AppState.rebootRequired
                     ? "system-shutdown-update-symbolic"
                     : "system-reboot-symbolic"
 
-                onTriggered:
-                    rebootDialog.accept()
+                enabled: AppState.allowCommands
+                onTriggered: {
+                    if (enabled)
+                        rebootDialog.accept();
+                }
             },
 
             Kirigami.Action {
@@ -474,27 +485,10 @@ StatefulApp.StatefulWindow {
         ]
 
         onAccepted: {
-            AppState.rebootSystem(function(callback) {
-                rebootTimer.start();
-                console.log("Reboot callback: " + callback);
+            AppState.rebootSystem(function(code) {
+                if (code !== 0)
+                    root.showPassiveNotification(i18n("Reboot request failed. Use the desktop system menu when ready."));
             });
-        }
-
-        // Wait before reporting failure so a successful reboot
-        // doesn't briefly display an error notification.
-        Timer {
-            id: rebootTimer
-
-            interval: 5000
-            repeat: false
-
-            onTriggered:
-                root.showPassiveNotification(
-                    i18n(
-                        "FE-Xico Updater was unable to reboot the system. "
-                        + "Reboot through your system menu to apply changes."
-                    )
-                )
         }
 
         function handleInput(buttonId, button_down) {
@@ -503,7 +497,8 @@ StatefulApp.StatefulWindow {
 
             switch (buttonId) {
             case 0: // A
-                confirmReboot.triggered();
+                if (confirmReboot.enabled)
+                    confirmReboot.trigger();
                 break;
 
             case 1: // B
@@ -527,9 +522,9 @@ StatefulApp.StatefulWindow {
 
         subtitle: {
             if (!AppState.commandRunning) {
-                return AppState.commandSucceeded
+                return AppState.rebootRequired
                     ? i18n(
-                        "The FE-Xico update is staged. "
+                        "A deployment change is pending. "
                         + "Restart the system to apply it."
                     )
                     : i18n(
@@ -544,13 +539,13 @@ StatefulApp.StatefulWindow {
             ) {
                 return i18n(
                     "An update operation is still running. "
-                    + "Exiting now may leave the system update incomplete."
+                    + "The system service continues if this window disconnects. Wait for the result before rebooting."
                 );
             }
 
             return i18n(
                 "An update operation is still running. "
-                + "If you exit now, its changes may not be applied."
+                + "The system service continues independently. Closing this window does not cancel it."
             );
         }
 
@@ -598,8 +593,10 @@ StatefulApp.StatefulWindow {
                         === "true"
                     || !AppState.commandRunning
 
-                onTriggered:
-                    exitDialog.accept()
+                onTriggered: {
+                    if (enabled)
+                        exitDialog.accept();
+                }
             },
 
             Kirigami.Action {
@@ -624,7 +621,8 @@ StatefulApp.StatefulWindow {
 
             switch (buttonId) {
             case 0: // A
-                confirmExit.triggered();
+                if (confirmExit.enabled)
+                    confirmExit.trigger();
                 break;
 
             case 1: // B

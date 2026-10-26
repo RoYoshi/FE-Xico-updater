@@ -18,7 +18,7 @@
 
 AppConfig::AppConfig()
 {
-    serviceHelperScript = findConfigFile(u"fe-xico-updater/service-as-program.sh"_s);
+
 
     // Store the OsRelease file into a QJsonObject
     QFile os_release(u"/etc/os-release"_s);
@@ -39,7 +39,8 @@ AppConfig::AppConfig()
     QFile aboutData(findConfigFile(u"fe-xico-updater/KAboutData_OS.json"_s));
     if (!aboutData.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Failed to open KAboutData_OS";
-        aboutOs[u"displayName"_s] = u"Failed to fetch information."_s;
+        aboutOs[u"displayName"_s] = osRelease.value(u"PRETTY_NAME"_s).toString(u"FE-XicoOS"_s);
+        aboutOs[u"version"_s] = osRelease.value(u"FE_XICO_VERSION"_s).toString();
     } else {
         QByteArray file = aboutData.readAll();
         QJsonDocument doc = QJsonDocument::fromJson(file);
@@ -119,17 +120,19 @@ QString findConfigFile(const QString &relativePath)
 
     bases.append({u"/etc"_s, u"/usr/local/etc"_s, u"/usr/etc"_s});
 
-    // append XDG_CONFIG_DIRS last because any user (or malicious program run by the user) can change it
-    if (auto xdg_config = qEnvironmentVariable("XDG_CONFIG_DIRS"); xdg_config.isEmpty())
-        bases.append(u"/etc/xdg"_s);
-    else
-        bases.append(xdg_config.split(u':', Qt::SkipEmptyParts));
+    // Fixed system paths only; environment overrides cannot supply commands.
+    bases.append({u"/etc/xdg"_s, u"/usr/etc/xdg"_s, u"/usr/local/etc/xdg"_s});
 
     for (const QString &dir : bases) {
         const QString path = QDir(dir).filePath(relativePath);
         QFile file(path);
 
         if (file.exists()) {
+            const QFileInfo info(file);
+            if (info.ownerId() != 0 || (info.permissions() & (QFile::WriteGroup | QFile::WriteOther))) {
+                qWarning() << "Ignoring unsafe system config:" << path;
+                continue;
+            }
             if (file.open(QIODevice::ReadOnly))
                 return path;
             else
@@ -146,6 +149,8 @@ namespace SingletonInternals
 ConfigIni::ConfigIni()
 {
     auto filepath = findConfigFile(u"fe-xico-updater/config.ini"_s);
+    if (filepath.isEmpty())
+        return; // Never let an empty filename invoke KConfig user defaults.
     auto base_path = QFileInfo(filepath).absolutePath();
 
     KSharedConfigPtr config = KSharedConfig::openConfig(filepath, KConfig::SimpleConfig);

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QColor>
+#include <QJsonObject>
 #include <QFileInfo>
 #include <QJSValue>
 #include <QModelIndex>
@@ -87,6 +88,10 @@ private:
 
     Q_PROPERTY(bool commandRunning READ commandRunning NOTIFY commandRunningChanged)
     Q_PROPERTY(bool commandSucceeded READ commandSucceeded NOTIFY commandSucceededChanged)
+    Q_PROPERTY(bool rebootRequired READ rebootRequired NOTIFY resultChanged)
+    Q_PROPERTY(QString resultMessage READ resultMessage NOTIFY resultChanged)
+    Q_PROPERTY(QString operation READ operation NOTIFY resultChanged)
+    Q_PROPERTY(QJsonObject hostStatus READ hostStatus NOTIFY resultChanged)
     Q_PROPERTY(bool allowCommands READ allowCommands NOTIFY allowCommandsChanged)
 
     Q_PROPERTY(QString commandError READ commandError NOTIFY commandErrorChanged)
@@ -125,12 +130,20 @@ public:
     }
     bool allowCommands() const
     {
-        return !m_commandSucceeded && !commandRunning();
+        return !commandRunning() && !m_rebootRunning;
     }
     QString commandError() const
     {
         return QString::fromUtf8(cmd_out);
     }
+
+    bool rebootRequired() const { return m_rebootRequired; }
+    QString resultMessage() const { return m_resultMessage; }
+    QString operation() const { return m_operation; }
+    QJsonObject hostStatus() const { return m_hostStatus; }
+    void setOperation(const QString &action) { m_operation = action; Q_EMIT resultChanged(); }
+    void setResult(const QString &message, const QJsonObject &host = {});
+    Q_SIGNAL void resultChanged();
 
     void setUpdateRunning(bool running);
     void setRollbackRunning(bool running);
@@ -154,6 +167,11 @@ public:
     QByteArray cmd_out;
 
 private:
+    bool m_rebootRequired = false;
+    bool m_rebootRunning = false;
+    QString m_resultMessage;
+    QString m_operation;
+    QJsonObject m_hostStatus;
     bool m_updateRunning = false;
     bool m_rollbackRunning = false;
     bool m_rebaseRunning = false;

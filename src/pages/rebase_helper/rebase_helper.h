@@ -1,106 +1,19 @@
-// SPDX-FileCopyrightText: 2025-2026 Robert French <frenchrobertm@outlook.com>
 // SPDX-License-Identifier: GPL-2.0-or-later
-
 #pragma once
-
-#include <KLocalizedString>
-#include <QClipboard>
-#include <QFileInfo>
-#include <QJSValue>
-#include <QProcess>
 #include <QQmlEngine>
-#include <qqmlintegration.h>
-#include <qtmetamacros.h>
-
+#include <QJSValue>
 #include "console.h"
-#include "utils.h"
 
-using namespace Qt::Literals::StringLiterals;
-
-namespace Gpu
-{
-Q_NAMESPACE
-QML_ELEMENT
-
-enum class Drivers {
-    UNKNOWN = -1,
-    BASE,
-    NVIDIA,
-    NVIDIA_OPEN,
-    UNSUPPORTED
-};
-
-Q_ENUM_NS(Drivers)
-}
-
-struct osImage {
-    Q_GADGET
-    QML_VALUE_TYPE(osImage)
-
-    Q_PROPERTY(QString name MEMBER m_imageName CONSTANT)
-    Q_PROPERTY(QString vendor MEMBER m_imageVendor CONSTANT)
-    Q_PROPERTY(QString ref MEMBER m_imageRef CONSTANT)
-    Q_PROPERTY(QString tag MEMBER m_imageTag CONSTANT)
-    Q_PROPERTY(QString branch MEMBER m_imageBranch CONSTANT)
-    Q_PROPERTY(QString baseName MEMBER m_baseImageName CONSTANT)
-    Q_PROPERTY(QString fedoraVersion MEMBER m_fedoraVersion CONSTANT)
-    Q_PROPERTY(QString version MEMBER m_version CONSTANT)
-    Q_PROPERTY(QString versionPretty MEMBER m_versionPretty CONSTANT)
-    Q_PROPERTY(QVariantMap datePretty MEMBER m_datePretty CONSTANT)
-    Q_PROPERTY(bool load_successful MEMBER m_isValid CONSTANT)
-
-public:
-    osImage() = default;
-    static osImage fromJson(const QString &filePath);
-
-    QString m_imageName;
-    QString m_imageVendor;
-    QString m_imageRef;
-    QString m_imageTag;
-    QString m_imageBranch;
-    QString m_baseImageName;
-    QString m_fedoraVersion;
-    QString m_version;
-    QString m_versionPretty;
-    QVariantMap m_datePretty;
-    bool m_isValid = false;
-};
-
+// Historical type name retained to preserve frontend navigation and imports.
 class RebaseHelperBackend : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
-
-    Q_PROPERTY(osImage currentImage READ currentImage CONSTANT)
     Q_PROPERTY(Console::Model *consoleModel MEMBER m_console CONSTANT)
-
-    Q_PROPERTY(Gpu::Drivers bestDriver READ gpuDrivers NOTIFY recommendedDriverChanged)
-
-    Gpu::Drivers best_driver;
-
-    osImage m_osImage_current;
-    void setGpuDrivers();
-
 public:
-    RebaseHelperBackend(QObject *parent = nullptr);
-
-    osImage currentImage() const
-    {
-        return m_osImage_current;
-    }
-    Gpu::Drivers gpuDrivers() const
-    {
-        return best_driver;
-    }
-
-    Q_SIGNAL void recommendedDriverChanged();
-
-    // ROLLBACK
+    explicit RebaseHelperBackend(QObject *parent = nullptr);
     Q_INVOKABLE void rollbackImage(QJSValue callback);
-
-    // // REBASE
-    // Q_INVOKABLE void rebaseImage(const QString new_image, QJSValue callback);
-
+    Q_INVOKABLE void refreshStatus(QJSValue callback);
     Console::Model *m_console;
 };

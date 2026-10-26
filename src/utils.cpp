@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 
 #include "utils.h"
+#include <memory>
 #include <qcontainerfwd.h>
 #include <qguiapplication.h>
 #include <qlogging.h>
@@ -21,7 +22,7 @@ namespace Utils
 void startProcess(QProcess *process, const QStringList &command)
 {
     qInfo() << "> " << command.join(u" ");
-    process->start(command.at(0), command.mid(1));
+    process->start(command.value(0), command.mid(1));
 }
 
 DbusListener::DbusListener(QObject *parent)
@@ -135,12 +136,45 @@ void AppState::sendUpdateSignals(sendSignals signal)
     }
 }
 
+void AppState::setResult(const QString &message, const QJsonObject &host)
+{
+    m_resultMessage = message;
+    m_hostStatus = host;
+    const auto status = host.value(u"status"_s).toObject();
+    m_rebootRequired = status.value(u"staged"_s).isObject() || status.value(u"rollbackQueued"_s).toBool();
+    Q_EMIT resultChanged();
+}
+
 void AppState::rebootSystem(QJSValue callback)
 {
-    QProcess reboot;
-    Utils::startProcess(&reboot, {u"systemctl"_s, u"reboot"_s});
-    reboot.waitForFinished();
-    callback.call({1});
+    if (!allowCommands()) {
+        if (callback.isCallable())
+            callback.call({1});
+        return;
+    }
+    m_rebootRunning = true;
+    Q_EMIT allowCommandsChanged();
+    auto *process = new QProcess(this);
+    auto done = std::make_shared<bool>(false);
+    auto finish = [this, process, done, callback](int code) {
+        if (*done)
+            return;
+        *done = true;
+        m_rebootRunning = false;
+        Q_EMIT allowCommandsChanged();
+        process->deleteLater();
+        if (callback.isCallable())
+            callback.call({code});
+    };
+    connect(process, &QProcess::finished, this, [finish](int code, QProcess::ExitStatus status) {
+        finish(status == QProcess::NormalExit ? code : 1);
+    });
+    connect(process, &QProcess::errorOccurred, this, [finish](QProcess::ProcessError error) {
+        if (error == QProcess::FailedToStart)
+            finish(1);
+    });
+    process->setStandardInputFile(QProcess::nullDevice());
+    process->start(u"/usr/bin/systemctl"_s, {u"reboot"_s});
 }
 
 void AppState::appendCommandError(QByteArray error)
