@@ -218,6 +218,8 @@ Kirigami.Page {
                     Kirigami.Heading {
                         level: 3
 
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
                         text: AppState.resultMessage || i18n(
                             "Check for and stage FE-XicoOS image updates. Flatpak apps are managed separately in your app store."
                         )
@@ -313,7 +315,9 @@ Kirigami.Page {
 
                 text: {
                     if (AppState.updateRunning)
-                        return i18n("Updating FE-Xico…");
+                        return AppState.operation === "check" ? i18n("Checking for updates…")
+                            : AppState.operation === "status" ? i18n("Reading deployments…")
+                            : i18n("Updating FE-Xico…");
 
                     if (AppState.commandSucceeded)
                         return i18n("Update FE-Xico");

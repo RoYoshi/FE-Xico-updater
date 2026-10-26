@@ -4,7 +4,7 @@ import QtQuick.Controls
 import org.kde.kirigamiaddons.formcard as FormCard
 import io.github.rfrench3.controllable as GP
 
-FormCard.AboutPage {
+NativeAboutPage {
     id: page
 
     title:

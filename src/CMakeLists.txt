@@ -51,6 +51,7 @@ ecm_target_qml_sources(fe-xico-updater
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rss_feed/RssPage.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rss_feed/FCRssDelegate.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rss_feed/RssModel.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/NativeAboutPage.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/AboutDataOS.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/settings/Settings.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/console/ConsoleView.qml
