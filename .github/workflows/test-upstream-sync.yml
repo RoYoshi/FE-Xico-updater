@@ -1,0 +1,32 @@
+# Validate the safe-sync engine without fetching or executing upstream code.
+name: Test safe upstream synchronization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/sync_upstream_safe.py'
+      - 'tests/test_sync_upstream_safe.py'
+      - '.github/workflows/upstream-sync.yml'
+      - '.github/workflows/test-upstream-sync.yml'
+  pull_request:
+    paths:
+      - 'scripts/sync_upstream_safe.py'
+      - 'tests/test_sync_upstream_safe.py'
+      - '.github/workflows/upstream-sync.yml'
+      - '.github/workflows/test-upstream-sync.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate syntax
+        run: python3 -m py_compile scripts/sync_upstream_safe.py tests/test_sync_upstream_safe.py
+      - name: Test local customization protection
+        run: python3 -m unittest discover -s tests -p 'test_sync_upstream_safe.py' -v
