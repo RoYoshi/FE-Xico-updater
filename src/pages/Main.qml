@@ -80,7 +80,8 @@ StatefulApp.StatefulWindow {
 
         function onButtonEvent(buttonId, button_down) {
             if (root.activeDialog) {
-                root.activeDialog.handleInput(buttonId, button_down);
+                if (root.activeDialog.visible !== false)
+                    root.activeDialog.handleInput(buttonId, button_down);
                 return;
             }
 

@@ -132,7 +132,13 @@ FormCard.FormCardPage {
         modal: true
         onVisibleChanged: {
             if (visible) applicationWindow().activeDialog = licenseDialog;
-            else if (applicationWindow().activeDialog === licenseDialog) applicationWindow().activeDialog = null;
+            else releaseInput();
+        }
+        function releaseInput() {
+            const owner = applicationWindow();
+            Qt.callLater(function() {
+                if (!licenseDialog.visible && owner.activeDialog === licenseDialog) owner.activeDialog = null;
+            });
         }
         function handleInput(buttonId, down) {
             if (down && (buttonId === 0 || buttonId === 1)) close();

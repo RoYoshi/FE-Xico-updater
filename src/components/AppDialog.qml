@@ -11,10 +11,19 @@ Kirigami.PromptDialog {
 
     maximumWidth: Kirigami.Units.gridUnit * 20
 
+    // Gamepad listeners share one signal. Keep ownership through this dispatch
+    // so the A press that closes a dialog cannot reach a background control.
+    function releaseInput() {
+        Qt.callLater(function() {
+            if (!root.visible && activeDialogParent.activeDialog === root)
+                activeDialogParent.activeDialog = null;
+        });
+    }
+
     onVisibleChanged: {
         if (visible)
             activeDialogParent.activeDialog = root;
-        else if (activeDialogParent.activeDialog === root)
-            activeDialogParent.activeDialog = null;
+        else
+            releaseInput();
     }
 }

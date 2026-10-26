@@ -153,6 +153,18 @@ private Q_SLOTS:
         check(u"root.activeDialog={handleInput:function(){dialogEvents++}}; onButtonEvent(0,true)"_s, 1);
         QCOMPARE(engine.globalObject().property(u"dialogEvents"_s).toInt(), 1);
         check(u"root.activeDialog=null;globalDrawer.drawerOpen=false;consoleDrawer.drawerOpen=false;onButtonEvent(0,true)"_s, 2);
+        // Exercise the actual deferred modal release function, including a
+        // replacement dialog opening before the deferred callback executes.
+        const auto release = handler(u"/components/AppDialog.qml"_s, u"releaseInput"_s);
+        QVERIFY(!release.isEmpty());
+        QVERIFY(!engine.evaluate(release).isError());
+        QVERIFY(!engine.evaluate(u"var deferred=null;var Qt={callLater:function(f){deferred=f}};var activeDialogParent={activeDialog:root};root.visible=false;releaseInput();"_s).isError());
+        QVERIFY(engine.evaluate(u"activeDialogParent.activeDialog===root"_s).toBool());
+        engine.evaluate(u"deferred();"_s);
+        QVERIFY(engine.evaluate(u"activeDialogParent.activeDialog===null"_s).toBool());
+        engine.evaluate(u"activeDialogParent.activeDialog=root;releaseInput();var replacement={};activeDialogParent.activeDialog=replacement;deferred();"_s);
+        QVERIFY(engine.evaluate(u"activeDialogParent.activeDialog===replacement"_s).toBool());
+
     }
     void controllerNavigationRespectsModalOwner() {
         QJSEngine engine;
