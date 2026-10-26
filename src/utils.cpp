@@ -141,7 +141,9 @@ void AppState::setResult(const QString &message, const QJsonObject &host)
     m_resultMessage = message;
     m_hostStatus = host;
     const auto status = host.value(u"status"_s).toObject();
-    m_rebootRequired = status.value(u"staged"_s).isObject() || status.value(u"rollbackQueued"_s).toBool();
+    const auto staged = status.value(u"staged"_s);
+    m_rebootRequired = (staged.isObject() && !staged.toObject().value(u"downloadOnly"_s).toBool())
+        || status.value(u"rollbackQueued"_s).toBool();
     Q_EMIT resultChanged();
 }
 

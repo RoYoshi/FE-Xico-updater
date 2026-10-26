@@ -130,6 +130,13 @@ FormCard.FormCardPage {
         id: licenseDialog
         parent: QQC2.Overlay.overlay
         modal: true
+        onVisibleChanged: {
+            if (visible) applicationWindow().activeDialog = licenseDialog;
+            else if (applicationWindow().activeDialog === licenseDialog) applicationWindow().activeDialog = null;
+        }
+        function handleInput(buttonId, down) {
+            if (down && (buttonId === 0 || buttonId === 1)) close();
+        }
         standardButtons: QQC2.Dialog.Close
         width: Math.min(parent ? parent.width - 32 : 600, 700)
         height: Math.min(parent ? parent.height - 32 : 400, 600)

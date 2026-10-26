@@ -33,7 +33,7 @@ FormCardCollapsible {
     }
     FC.FormTextDelegate {
         text: card.describe(card.state.staged)
-        description: i18n("Staged Deployment")
+        description: card.state.staged?.downloadOnly ? i18n("Download-only Deployment — Locked; Reboot Will Not Apply") : i18n("Staged Deployment")
         textItem.wrapMode: Text.WordWrap
     }
     FormDelegateSeparatorFixed {}

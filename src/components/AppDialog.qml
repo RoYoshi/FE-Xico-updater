@@ -11,19 +11,10 @@ Kirigami.PromptDialog {
 
     maximumWidth: Kirigami.Units.gridUnit * 20
 
-    Connections {
-        target: root
-
-        function onOpened() {
+    onVisibleChanged: {
+        if (visible)
             activeDialogParent.activeDialog = root;
-        }
-
-        function onAccepted() {
+        else if (activeDialogParent.activeDialog === root)
             activeDialogParent.activeDialog = null;
-        }
-
-        function onRejected() {
-            activeDialogParent.activeDialog = null;
-        }
     }
 }

@@ -80,11 +80,14 @@ private Q_SLOTS:
     void nativeOutcomes_data() {
         QTest::addColumn<QString>("mode"); QTest::addColumn<QString>("action");
         QTest::addColumn<bool>("success"); QTest::addColumn<bool>("reboot");
+        QTest::newRow("download-only") << u"download-only"_s << u"upgrade"_s << true << false;
+        QTest::newRow("download-only-status") << u"download-only"_s << u"status"_s << true << false;
+        QTest::newRow("download-only-check") << u"download-only"_s << u"check"_s << true << false;
         QTest::newRow("staged") << u"staged"_s << u"upgrade"_s << true << true;
         QTest::newRow("no-op") << u"noop"_s << u"upgrade"_s << true << false;
         QTest::newRow("check") << u"noop"_s << u"check"_s << true << false;
         QTest::newRow("rollback") << u"noop"_s << u"rollback"_s << true << true;
-        for (const auto &mode : {u"fail"_s, u"empty"_s, u"malformed"_s, u"duplicate"_s, u"contradiction"_s,
+        for (const auto &mode : {u"locked-lie"_s, u"locked-mislabeled"_s, u"invalid-lock"_s, u"fail"_s, u"empty"_s, u"malformed"_s, u"duplicate"_s, u"contradiction"_s,
                                  u"nonzero-result"_s, u"stderr-result"_s, u"crash"_s})
             QTest::newRow(qPrintable(mode)) << mode << u"upgrade"_s << false << false;
         QTest::newRow("rollback-failure") << u"fail"_s << u"rollback"_s << false << false;
@@ -101,8 +104,54 @@ private Q_SLOTS:
         QCOMPARE(engine.globalObject().property(u"code"_s).toInt(), success ? 0 : 1);
         QVERIFY(!engine.globalObject().property(u"wasRunning"_s).toBool());
         QCOMPARE(appState.commandSucceeded(), success); QCOMPARE(appState.rebootRequired(), reboot);
+        if (mode == u"download-only"_s) {
+            QVERIFY(appState.resultMessage().contains(u"Reboot will not apply"_s));
+            QVERIFY(!appState.rebootRequired());
+        }
         QVERIFY(appState.allowCommands()); QTest::qWait(30);
         QCOMPARE(engine.globalObject().property(u"calls"_s).toInt(), 1);
+    }
+    void actualControllerRouting() {
+        QJSEngine engine;
+        // Evaluate the production event handlers with inert UI objects: no SDL
+        // device, process launch or privileged command is involved.
+        auto handler = [&](const QString &path, const QString &name) {
+            QFile file(QStringLiteral(SOURCE_PATH) + path);
+            if (!file.open(QIODevice::ReadOnly)) return QString();
+            const QString text = QString::fromUtf8(file.readAll());
+            const auto start = text.indexOf(u"function "_s + name + u"("_s);
+            const auto brace = text.indexOf(u'{', start);
+            int depth = 1; qsizetype end = brace + 1;
+            while (end < text.size() && depth) {
+                if (text[end] == u'{') ++depth;
+                if (text[end] == u'}') --depth;
+                ++end;
+            }
+            return start < 0 || depth ? QString() : text.mid(start, end - start);
+        };
+        const auto page = handler(u"/pages/system_update/SystemUpdate.qml"_s, u"handleInput"_s);
+        const auto main = handler(u"/pages/Main.qml"_s, u"onButtonEvent"_s);
+        QVERIFY(!page.isEmpty()); QVERIFY(!main.isEmpty());
+        QVERIFY(!engine.evaluate(page + u"; var pageHandler=handleInput;"_s + main).isError());
+        QVERIFY(!engine.evaluate(u"var updates=0,consoleEvents=0,dialogEvents=0,drawerEvents=0; "
+            "var updateAction={enabled:true}; var updateButton={animateClick:function(){updates++}}; "
+            "var consoleDrawer={drawerOpen:false,handleInput:function(){consoleEvents++}}; "
+            "var globalDrawer={drawerOpen:false,handleInput:function(){drawerEvents++}}; "
+            "var root={activeDialog:null,pageStack:{currentItem:{handleInput:pageHandler}}};"_s).isError());
+        auto check = [&](const QString &code, int expected) {
+            QVERIFY(!engine.evaluate(code).isError());
+            QCOMPARE(engine.globalObject().property(u"updates"_s).toInt(), expected);
+        };
+        check(u"onButtonEvent(0,true)"_s, 1);
+        check(u"onButtonEvent(0,false)"_s, 1);
+        check(u"updateAction.enabled=false; onButtonEvent(0,true)"_s, 1);
+        check(u"updateAction.enabled=true; consoleDrawer.drawerOpen=true; onButtonEvent(0,true)"_s, 1);
+        QCOMPARE(engine.globalObject().property(u"consoleEvents"_s).toInt(), 1);
+        check(u"globalDrawer.drawerOpen=true; onButtonEvent(0,true)"_s, 1);
+        QCOMPARE(engine.globalObject().property(u"drawerEvents"_s).toInt(), 1);
+        check(u"root.activeDialog={handleInput:function(){dialogEvents++}}; onButtonEvent(0,true)"_s, 1);
+        QCOMPARE(engine.globalObject().property(u"dialogEvents"_s).toInt(), 1);
+        check(u"root.activeDialog=null;globalDrawer.drawerOpen=false;consoleDrawer.drawerOpen=false;onButtonEvent(0,true)"_s, 2);
     }
     void untrustedConfigAndBoundedLogs() {
         QTemporaryDir temp;

@@ -183,7 +183,7 @@ StatefulApp.StatefulWindow {
 
             onActivated: {
                 if (root.activeDialog)
-                    root.activeDialog.accept();
+                    root.activeDialog.handleInput(0, true);
                 else
                     globalDrawer.drawerOpen = false;
             }
@@ -416,7 +416,8 @@ StatefulApp.StatefulWindow {
                 break;
 
             case 3: // Y
-                actionReboot.triggered();
+                if (actionReboot.enabled)
+                    actionReboot.trigger();
                 break;
 
             case 11: // D-pad Up

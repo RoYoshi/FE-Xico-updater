@@ -10,8 +10,8 @@ bool validNativeResult(const QJsonObject &r, const QString &action)
 {
     const QMap<QString, QStringList> outcomes = {
         {u"status"_s, {u"status"_s}},
-        {u"check"_s, {u"update-available"_s, u"up-to-date"_s, u"already-staged"_s}},
-        {u"upgrade"_s, {u"staged"_s, u"already-staged"_s, u"up-to-date"_s}},
+        {u"check"_s, {u"update-available"_s, u"up-to-date"_s, u"already-staged"_s, u"download-only"_s}},
+        {u"upgrade"_s, {u"staged"_s, u"already-staged"_s, u"up-to-date"_s, u"download-only"_s}},
         {u"rollback"_s, {u"rollback-queued"_s, u"rollback-already-queued"_s}},
     };
     const auto outcome = r.value(u"outcome"_s).toString();
@@ -19,6 +19,8 @@ bool validNativeResult(const QJsonObject &r, const QString &action)
     const auto status = host.value(u"status"_s).toObject();
     const auto spec = host.value(u"spec"_s).toObject();
     const auto staged = status.value(u"staged"_s);
+    const auto downloadOnly = staged.toObject().value(u"downloadOnly"_s);
+    const bool locked = downloadOnly.toBool();
     const auto rollback = status.value(u"rollback"_s);
     const auto queued = status.value(u"rollbackQueued"_s);
     static const QRegularExpression id(u"^[0-9a-f]{32}$"_s);
@@ -29,16 +31,19 @@ bool validNativeResult(const QJsonObject &r, const QString &action)
         || host.value(u"apiVersion"_s).toString() != u"org.containers.bootc/v1"_s
         || !status.value(u"booted"_s).isObject() || !queued.isBool()
         || !(staged.isNull() || staged.isObject()) || !(rollback.isNull() || rollback.isObject())
+        || (!downloadOnly.isUndefined() && !downloadOnly.isBool())
         || !r.value(u"rebootRequired"_s).isBool())
         return false;
     const auto order = spec.value(u"bootOrder"_s).toString();
     if ((order != u"default"_s && order != u"rollback"_s)
         || (order == u"rollback"_s) != queued.toBool()
         || (queued.toBool() && (!rollback.isObject() || staged.isObject()))
-        || r.value(u"rebootRequired"_s).toBool() != (staged.isObject() || queued.toBool()))
+        || r.value(u"rebootRequired"_s).toBool() != ((staged.isObject() && !locked) || queued.toBool()))
         return false;
     if (outcome == u"staged"_s || outcome == u"already-staged"_s)
-        return staged.isObject() && !queued.toBool();
+        return staged.isObject() && !locked && !queued.toBool();
+    if (outcome == u"download-only"_s)
+        return staged.isObject() && locked && !queued.toBool();
     if (action == u"rollback"_s)
         return queued.toBool();
     if (outcome == u"up-to-date"_s || outcome == u"update-available"_s)
@@ -49,6 +54,8 @@ bool validNativeResult(const QJsonObject &r, const QString &action)
 static QString resultText(const QJsonObject &result)
 {
     const auto outcome = result.value(u"outcome"_s).toString();
+    if (result.value(u"status"_s).toObject().value(u"status"_s).toObject().value(u"staged"_s).toObject().value(u"downloadOnly"_s).toBool())
+        return i18n("A download-only deployment is preserved and locked. Reboot will not apply it. This updater does not unlock downloaded deployments.");
     if (outcome == u"staged"_s)
         return i18n("A new FE-XicoOS deployment is staged. Restart when you are ready.");
     if (outcome == u"already-staged"_s)

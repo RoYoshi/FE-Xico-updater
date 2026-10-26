@@ -37,14 +37,15 @@ Kirigami.Page {
         if (!button_down)
             return;
 
-        switch (buttonId) {
-        case 0: // A
-            updateButton.animateClick();
+        if (consoleDrawer.drawerOpen) {
+            consoleDrawer.handleInput(buttonId, button_down);
             return;
         }
 
-        if (consoleDrawer.drawerOpen) {
-            consoleDrawer.handleInput(buttonId, button_down);
+        switch (buttonId) {
+        case 0: // A
+            if (updateAction.enabled)
+                updateButton.animateClick();
             return;
         }
 
@@ -77,6 +78,9 @@ Kirigami.Page {
 
         enabled:
             AppState.allowCommands
+            && !consoleDrawer.drawerOpen
+            && !globalDrawer.drawerOpen
+            && !applicationWindow().activeDialog
             && !SystemUpdateBackend.blockUpdate
             && (AppConfig.ini.Commands?.systemUpdateCommand || "")
 

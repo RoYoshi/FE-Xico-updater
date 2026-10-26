@@ -19,7 +19,7 @@ if mode == 'long':
 if mode == 'fail': sys.exit(19)
 if mode == 'empty': sys.exit(0)
 action = sys.argv[2] if len(sys.argv) > 2 else 'upgrade'
-staged = mode in ('staged', 'duplicate', 'nonzero-result', 'stderr-result')
+staged = mode in ('download-only', 'locked-lie', 'locked-mislabeled', 'invalid-lock', 'staged', 'duplicate', 'nonzero-result', 'stderr-result')
 rollback = action == 'rollback'
 host = dict(apiVersion='org.containers.bootc/v1', spec=dict(bootOrder='rollback' if rollback else 'default'),
             status=dict(booted={}, staged={} if staged else None, rollback={} if rollback else None,
@@ -27,6 +27,12 @@ host = dict(apiVersion='org.containers.bootc/v1', spec=dict(bootOrder='rollback'
 result = dict(protocol=1, action=action, invocation='a'*32, started='12',
               outcome='rollback-queued' if rollback else ('staged' if staged else 'up-to-date'),
               rebootRequired=staged or rollback, status=host)
+if mode in ('download-only', 'locked-lie', 'locked-mislabeled', 'invalid-lock'):
+    host['status']['staged']['downloadOnly'] = True
+    result.update(outcome='status' if action == 'status' else 'download-only', rebootRequired=False)
+    if mode == 'locked-lie': result['rebootRequired'] = True
+    if mode == 'locked-mislabeled': result['outcome'] = 'already-staged'
+    if mode == 'invalid-lock': host['status']['staged']['downloadOnly'] = 'false'
 if mode == 'malformed': result['protocol'] = 99
 if mode == 'contradiction': result['rebootRequired'] = True
 line = 'FE_XICO_RESULT ' + json.dumps(result)
