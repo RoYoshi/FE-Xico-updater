@@ -137,8 +137,10 @@ int main(int argc, char *argv[])
     const bool smokeTest = app.arguments().contains(u"--qml-smoke-test"_s);
     engine.rootContext()->setContextProperty(u"QmlSmokeTest"_s, smokeTest);
     bool qmlFailed = false;
-    QObject::connect(&engine, &QQmlEngine::warnings, &app, [&qmlFailed](const QList<QQmlError> &) {
+    QObject::connect(&engine, &QQmlEngine::warnings, &app, [&qmlFailed](const QList<QQmlError> &warnings) {
         qmlFailed = true;
+        for (const auto &warning : warnings)
+            std::cerr << warning.toString().toStdString() << std::endl;
     });
     engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
     if (engine.rootObjects().isEmpty())

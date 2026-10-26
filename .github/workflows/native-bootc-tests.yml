@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           cmake --install build
-          export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
           dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-smoke.log
       - name: Missing configuration and untrusted XDG directory
         shell: bash
@@ -41,7 +41,7 @@ jobs:
           mkdir -p /tmp/untrusted/fe-xico-updater
           printf '[Commands]\nsystemUpdateCommand=/does-not-exist\n' > /tmp/untrusted/fe-xico-updater/config.ini
           export XDG_CONFIG_DIRS=/tmp/untrusted
-          export QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
           dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-no-config.log
       - uses: actions/upload-artifact@v4
         if: always()
