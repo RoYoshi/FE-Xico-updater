@@ -12,6 +12,8 @@ jobs:
     container: fedora:44
     timeout-minutes: 25
     steps:
+      - name: Bootstrap Git for recursive checkout
+        run: dnf5 -y install git
       - uses: actions/checkout@v4
         with:
           submodules: recursive
