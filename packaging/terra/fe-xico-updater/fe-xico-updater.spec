@@ -16,6 +16,8 @@ BuildRequires:  libappstream-glib
 BuildRequires:  systemd-rpm-macros
 
 BuildRequires:  cmake
+BuildRequires:  python3
+BuildRequires:  cmake(Qt6Test)
 BuildRequires:  extra-cmake-modules
 BuildRequires:  kf6-rpm-macros
 BuildRequires:  cmake(SDL3)

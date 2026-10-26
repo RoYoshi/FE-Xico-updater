@@ -80,6 +80,12 @@ int main(int argc, char *argv[])
         UseFullscreen = true;
     }
 
+    // Fedora 44 Qt 6.11.2 cached Kirigami Addons MessageDialog enum bindings
+    // fail during AboutPage creation. Recompile QML from source on this Qt
+    // version; retain the packaged KDE pages, metadata and license dialogs.
+    if (QString::fromLatin1(qVersion()) == u"6.11.2"_s)
+        qputenv("QML_DISABLE_DISK_CACHE", "1");
+
     QApplication app(argc, argv);
     KirigamiAppDefaults::apply(&app);
 

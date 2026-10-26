@@ -118,19 +118,11 @@ if(_USE_XDG_CONFIG)
     DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/fe-xico-updater"
     PATTERN "service-as-program.sh" EXCLUDE
   )
-  install(
-    PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/service-as-program.sh"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/etc/xdg/fe-xico-updater"
-  )
 else()
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/"
     DESTINATION "/etc/fe-xico-updater"
     PATTERN "service-as-program.sh" EXCLUDE
-  )
-  install(
-    PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/src/resources/service-as-program.sh"
-    DESTINATION "/etc/fe-xico-updater"
   )
 endif()
 
