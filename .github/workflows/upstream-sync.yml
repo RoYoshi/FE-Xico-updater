@@ -4,6 +4,12 @@
 name: Review upstream Bazzite Updater changes
 
 on:
+  # Run the first guarded review when this workflow is added or revised.
+  # Normal subsequent checks are the Monday schedule or manual dispatch.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/upstream-sync.yml'
   schedule:
     - cron: '37 12 * * 1'  # Every Monday, UTC
   workflow_dispatch:
