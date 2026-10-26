@@ -121,14 +121,21 @@ Kirigami.Page {
             Layout.topMargin: Kirigami.Units.largeSpacing
             spacing: Kirigami.Units.largeSpacing
 
-            Kirigami.Icon {
-                source: "io.github.royoshi.fexicoupdater"
+            Image {
+                // The supplied high-resolution artwork is embedded in the app,
+                // so the header works even when the theme icon is not installed.
+                source: "qrc:/updaterLogo"
 
                 Layout.preferredWidth:
                     Kirigami.Units.iconSizes.huge
 
                 Layout.preferredHeight:
                     Kirigami.Units.iconSizes.huge
+
+                sourceSize: Qt.size(256, 256)
+                fillMode: Image.PreserveAspectFit
+                smooth: true
+                mipmap: true
             }
 
             ColumnLayout {
