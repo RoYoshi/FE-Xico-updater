@@ -125,7 +125,9 @@ int main(int argc, char *argv[])
     aboutData.setDesktopFileName(FULL_APP_DOMAIN);
     KAboutData::setApplicationData(aboutData);
 
-    QGuiApplication::setWindowIcon(QIcon::fromTheme(FULL_APP_DOMAIN));
+    // Prefer KDE's installed scalable icon; retain the bundled PNG for
+    // development builds and sessions without the FE-Xico icon theme entry.
+    QGuiApplication::setWindowIcon(QIcon::fromTheme(FULL_APP_DOMAIN, QIcon(u":/updaterLogo"_s)));
     QGuiApplication::setDesktopFileName(FULL_APP_DOMAIN);
 
     QQmlApplicationEngine engine;
