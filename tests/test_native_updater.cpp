@@ -4,6 +4,7 @@
 #include <QTimer>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QRegularExpression>
 #include "console.h"
 #include "native_operation.h"
 #include "utils.h"
@@ -152,6 +153,27 @@ private Q_SLOTS:
         check(u"root.activeDialog={handleInput:function(){dialogEvents++}}; onButtonEvent(0,true)"_s, 1);
         QCOMPARE(engine.globalObject().property(u"dialogEvents"_s).toInt(), 1);
         check(u"root.activeDialog=null;globalDrawer.drawerOpen=false;consoleDrawer.drawerOpen=false;onButtonEvent(0,true)"_s, 2);
+    }
+    void controllerNavigationRespectsModalOwner() {
+        QJSEngine engine;
+        engine.evaluate(u"var globalDrawer={drawerOpen:false}; var consoleDrawer={drawerOpen:false}; var root={activeDialog:null}; function applicationWindow(){return root;}"_s);
+        for (const auto &name : {u"AboutDataOS.qml"_s, u"AboutDataApp.qml"_s, u"rss_feed/RssPage.qml"_s,
+                                 u"settings/Settings.qml"_s, u"rebase_helper/RebaseHelper.qml"_s}) {
+            QFile file(QStringLiteral(SOURCE_PATH) + u"/pages/"_s + name);
+            QVERIFY(file.open(QIODevice::ReadOnly));
+            const auto source = QString::fromUtf8(file.readAll());
+            const QRegularExpression pattern(u"active:\\s*([^\\n]+(?:\\n\\s*&&[^\\n]+)*)"_s);
+            const auto match = pattern.match(source);
+            QVERIFY2(match.hasMatch(), qPrintable(name));
+            const auto expression = match.captured(1).trimmed();
+            engine.evaluate(u"root.activeDialog=null; globalDrawer.drawerOpen=false;"_s);
+            const auto normal = engine.evaluate(expression);
+            QVERIFY2(!normal.isError() && normal.toBool(), qPrintable(expression));
+            engine.evaluate(u"root.activeDialog={};"_s);
+            QVERIFY(!engine.evaluate(expression).toBool());
+            engine.evaluate(u"root.activeDialog=null; globalDrawer.drawerOpen=true;"_s);
+            QVERIFY(!engine.evaluate(expression).toBool());
+        }
     }
     void untrustedConfigAndBoundedLogs() {
         QTemporaryDir temp;

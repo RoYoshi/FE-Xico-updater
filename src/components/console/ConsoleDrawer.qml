@@ -44,6 +44,7 @@ Kirigami.OverlayDrawer {
 
         GP.ScrollHandler {
             target: consoleView.scrollBar
+            active: root.drawerOpen && !globalDrawer.drawerOpen && !applicationWindow().activeDialog
         }
 
         ConsoleView {

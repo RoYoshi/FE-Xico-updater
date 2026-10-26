@@ -79,6 +79,7 @@ FC.FormCardPage {
         active:
             !globalDrawer.drawerOpen
             && !consoleDrawer.drawerOpen
+            && !applicationWindow().activeDialog
     }
 
     FC.FormHeader {

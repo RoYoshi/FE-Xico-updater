@@ -21,7 +21,7 @@ NativeAboutPage {
 
     GP.PageNavigation {
         targetScrollbar: page.grabScrollbar(page)
-        active: !globalDrawer.drawerOpen
+        active: !globalDrawer.drawerOpen && !applicationWindow().activeDialog
     }
 
     function grabScrollbar(item) {

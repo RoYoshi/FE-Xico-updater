@@ -41,7 +41,7 @@ FC.FormCardPage {
 
     GP.PageNavigation {
         targetScrollbar: page.scrollbar
-        active: !globalDrawer.drawerOpen
+        active: !globalDrawer.drawerOpen && !applicationWindow().activeDialog
     }
 
     // ─────────────────────────────────────────────────────────
