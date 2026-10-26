@@ -1,0 +1,69 @@
+# FE-Xico Updater follows Bazzite Updater without rebasing or clobbering
+# local branding, bootc commands, Qt/QML customizations or packaging.
+# This workflow *proposes a draft PR only*. No unattended merges.
+name: Review upstream Bazzite Updater changes
+
+on:
+  schedule:
+    - cron: '37 12 * * 1'  # Every Monday, UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: fe-xico-updater-upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  propose:
+    name: Prepare guarded upstream diff for review
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout FE-Xico Updater with full fork history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          submodules: false
+
+      - name: Test no-overwrite rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -p 'test_sync_upstream_safe.py' -v
+
+      - name: Fetch Bazzite Updater source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git remote add bazzite-upstream https://github.com/rfrench3/bazzite-updater.git
+          git fetch --no-tags bazzite-upstream main
+
+      - name: Propose untouched upstream changes and report protected files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/sync_upstream_safe.py \
+            --upstream bazzite-upstream/main \
+            --report docs/upstream-sync-report.md
+          git diff --check
+          git status --short
+
+      - name: Open or refresh draft review PR (never auto-merge)
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: automation/upstream-bazzite-review
+          delete-branch: true
+          draft: true
+          title: 'chore: review new Bazzite Updater changes (FE-Xico customizations protected)'
+          commit-message: 'chore: propose guarded Bazzite Updater sync for review'
+          body-path: docs/upstream-sync-report.md
+          add-paths: |
+            src/**
+            tests/**
+            cmake/**
+            docs/upstream-sync-report.md
