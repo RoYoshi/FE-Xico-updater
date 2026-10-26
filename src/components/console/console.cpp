@@ -40,14 +40,14 @@ QVariant Model::data(const QModelIndex &index, int role) const
 
 void Model::newLine(const QString &content, LogLevel level)
 {
-    if (m_lines.size() >= 5000) {
+    if (m_lines.size() >= 2000) {
         beginRemoveRows(QModelIndex(), 0, 499);
         m_lines.remove(0, 500);
         endRemoveRows();
     }
     const int row = m_lines.size();
     beginInsertRows(QModelIndex(), row, row);
-    m_lines.append({content, level});
+    m_lines.append({content.size() > 8192 ? content.left(8192) + u" … [line truncated; see system journal for full output]"_s : content, level});
     endInsertRows();
 }
 

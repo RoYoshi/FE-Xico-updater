@@ -25,9 +25,6 @@
 
 using namespace Qt::Literals::StringLiterals;
 
-QString formatForConsole(const QByteArray &bytes);
-QString formatForConsole(QString line);
-
 class SystemUpdateBackend : public QObject
 {
     Q_OBJECT

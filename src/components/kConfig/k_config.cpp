@@ -9,6 +9,7 @@
 #include <qdir.h>
 #include <qevent.h>
 #include <qjsondocument.h>
+#include <QJsonArray>
 #include <qjsonvalue.h>
 #include <qlogging.h>
 #include <qobject.h>
@@ -76,6 +77,20 @@ AppConfig::AppConfig()
         }
 
         aboutData.close();
+    }
+    // FormCard.AboutPage expects KAboutData-shaped strings/arrays even when
+    // a distribution supplies a minimal JSON file or no metadata file at all.
+    for (const auto &key : {u"displayName"_s, u"componentName"_s, u"productName"_s,
+                            u"desktopFileName"_s, u"shortDescription"_s, u"homepage"_s,
+                            u"bugAddress"_s, u"version"_s, u"otherText"_s, u"copyrightStatement"_s}) {
+        if (!aboutOs.value(key).isString())
+            aboutOs.insert(key, QString());
+    }
+    if (aboutOs.value(u"displayName"_s).toString().isEmpty())
+        aboutOs.insert(u"displayName"_s, osRelease.value(u"PRETTY_NAME"_s).toString(u"FE-XicoOS"_s));
+    for (const auto &key : {u"authors"_s, u"credits"_s, u"translators"_s, u"licenses"_s}) {
+        if (!aboutOs.value(key).isArray())
+            aboutOs.insert(key, QJsonArray());
     }
 }
 

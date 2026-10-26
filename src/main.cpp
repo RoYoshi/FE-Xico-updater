@@ -138,9 +138,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(u"QmlSmokeTest"_s, smokeTest);
     bool qmlFailed = false;
     QObject::connect(&engine, &QQmlEngine::warnings, &app, [&qmlFailed](const QList<QQmlError> &warnings) {
-        qmlFailed = true;
-        for (const auto &warning : warnings)
+        for (const auto &warning : warnings) {
             std::cerr << warning.toString().toStdString() << std::endl;
+            // Kirigami PageRow creates under a QtObject, then reparents into
+            // its scene. The smoke test separately verifies actual placement.
+            if (!warning.description().endsWith(u"Created graphical object was not placed in the graphics scene."_s))
+                qmlFailed = true;
+        }
     });
     engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
     if (engine.rootObjects().isEmpty())
@@ -154,7 +158,8 @@ int main(int argc, char *argv[])
                 app.exit(qmlFailed ? EXIT_FAILURE : EXIT_SUCCESS);
                 return;
             }
-            if (!QMetaObject::invokeMethod(engine.rootObjects().first(), "smokeTestPage", Q_ARG(QVariant, page++)))
+            QVariant placed;
+            if (!QMetaObject::invokeMethod(engine.rootObjects().first(), "smokeTestPage", Q_RETURN_ARG(QVariant, placed), Q_ARG(QVariant, page++)) || !placed.toBool())
                 qmlFailed = true;
         });
         timer->start();

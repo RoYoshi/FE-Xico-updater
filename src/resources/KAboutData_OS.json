@@ -1,10 +1,10 @@
 {
     "displayName": "FE-Xico",
-    "shortDescription": "FE-Xico, a customized Fedora Atomic desktop image",
+    "shortDescription": "FE-XicoOS, a Fedora-native bootc gaming distribution",
     "homepage": "https://github.com/RoYoshi/FE-Xico",
     "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
     "version": "@VERSION@",
-    "otherText": "FE-Xico is a custom Fedora Atomic desktop image. The updater is based on Bazzite Updater and retains integration with Universal Blue components.",
+    "otherText": "FE-XicoOS is an independent Fedora-based bootc distribution. FE-Xico Updater retains attribution to its Bazzite Updater origins and uses native FE-XicoOS services.",
     "authors": [
         {
             "name": "RoYoshi",

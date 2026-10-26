@@ -7,6 +7,9 @@
 #include "console.h"
 #include "native_operation.h"
 #include "utils.h"
+#include "k_config.h"
+#include <QTemporaryDir>
+#include <QFile>
 
 class NativeUpdaterTest : public QObject
 {
@@ -100,6 +103,20 @@ private Q_SLOTS:
         QCOMPARE(appState.commandSucceeded(), success); QCOMPARE(appState.rebootRequired(), reboot);
         QVERIFY(appState.allowCommands()); QTest::qWait(30);
         QCOMPARE(engine.globalObject().property(u"calls"_s).toInt(), 1);
+    }
+    void untrustedConfigAndBoundedLogs() {
+        QTemporaryDir temp;
+        QFile file(temp.filePath(u"fexico-untrusted-test.ini"_s));
+        QVERIFY(file.open(QIODevice::WriteOnly)); file.write("[Commands]\nsystemUpdateCommand=/untrusted\n"); file.close();
+        const auto previous = qgetenv("XDG_CONFIG_DIRS");
+        qputenv("XDG_CONFIG_DIRS", temp.path().toUtf8());
+        QVERIFY(findConfigFile(u"fexico-untrusted-test.ini"_s).isEmpty());
+        qputenv("XDG_CONFIG_DIRS", previous);
+        Console::Model model;
+        for (int i = 0; i < 2500; ++i)
+            model.newLine(QString(20000, u'x'), Console::LogLevel::Info);
+        QVERIFY(model.rowCount() <= 2000);
+        QVERIFY(model.data(model.index(0, 0)).toString().size() < 9000);
     }
     void busyAndMissingConfiguration() {
         Console::Model model; QJSEngine engine;

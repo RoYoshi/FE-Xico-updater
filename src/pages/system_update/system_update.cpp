@@ -74,30 +74,4 @@ void SystemUpdateBackend::setBlockUpdate(bool updateError)
     Q_EMIT blockUpdateChanged();
 }
 
-QString formatForConsole(const QByteArray &bytes)
-{
-    return formatForConsole(QString::fromUtf8(bytes));
-}
-
-QString formatForConsole(QString line)
-{
-    // TODO: lots of this is uupd-specific, but shouldn't break other update commands
-
-    { // Do not send specific unhelpful lines that get spammed a lot
-        const QStringList list = {u"Updating"_s, u"scanned progress"_s};
-
-        for (const auto &spam : list) {
-            if (line.trimmed() == spam)
-                return u""_s;
-        }
-    }
-
-    { // Remove ANSI escape patterns
-        static QRegularExpression ansiEscapePattern(QStringLiteral(R"(\x1b\[[0-9;]*m)"));
-        line.replace(ansiEscapePattern, u""_s);
-    }
-
-    return line;
-}
-
 #include "moc_system_update.cpp"

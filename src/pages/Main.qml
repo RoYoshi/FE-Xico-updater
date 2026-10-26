@@ -7,6 +7,7 @@ import QtQuick.Layouts
 
 import org.kde.kirigami as Kirigami
 import org.kde.kirigamiaddons.statefulapp as StatefulApp
+import org.kde.kirigamiaddons.components as AddonComponents
 
 import io.github.royoshi.fexicoupdater
 import io.github.rfrench3.controllable as GP
@@ -18,12 +19,16 @@ import io.github.rfrench3.controllable as GP
 StatefulApp.StatefulWindow {
     id: root
 
+    // Resolve the enum before AboutPage constructs its embedded dialogs.
+    readonly property int messageDialogSuccess: AddonComponents.MessageDialog.Success
+
     // Isolated QML load test; never starts an update or authentication request.
     function smokeTestPage(index) {
         if (!QmlSmokeTest)
             return;
         const pages = ["SystemUpdate.qml", "RebaseHelper.qml", "Settings.qml", "AboutDataOS.qml", "AboutDataApp.qml", "RssPage.qml"];
         pageStack.replace(Qt.resolvedUrl(pages[index]));
+        return !!pageStack.currentItem && pageStack.currentItem.Window.window === root;
     }
 
     // ─────────────────────────────────────────────────────────
