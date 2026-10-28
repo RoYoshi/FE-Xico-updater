@@ -6,7 +6,12 @@ This is a **work in progress**, adapted from [Bazzite Updater](https://github.co
 
 ![FE-Xico hat branding](io.github.royoshi.fexicoupdater.svg)
 
-## Current behavior
+## Automatic bootc updates (FE-XicoOS)
+
+Under **Settings → Automatic OS Updates**, check **Enable automatic OS updates** to turn on the system timer. The checkbox reads the actual `bootc-fetch-apply-updates.timer` state, rather than storing a local preference. Enabling or disabling prompts for confirmation and then the administrator password via the image-provided FE-XicoOS Polkit helper; manual updates remain available when automatic updates are off.
+
+**Important:** The stock bootc automatic-update service can **reboot the machine without asking**, including during a game. The dialog warns before enabling it. Your tracked bootc image source does not change. The UI gracefully disables this setting on non-FE-XicoOS hosts without the helper.
+
 
 - Start the configured system-update service and display live command output.
 - Show command success or failure and offer reboot guidance.
