@@ -42,7 +42,6 @@ private:
     Operation m_operation = Operation::None;
     bool m_enabled = false;
     bool m_available = false;
-    bool m_requested = false;
     QString m_error;
     QString m_state;
 };

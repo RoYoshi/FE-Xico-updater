@@ -17,6 +17,7 @@ class AutoUpdateCheckboxTests(unittest.TestCase):
         cpp = (ROOT / "src/auto_update_settings.cpp").read_text()
         self.assertIn('QStringLiteral("/usr/bin/pkexec")', cpp)
         self.assertIn('QStringLiteral("/usr/bin/bash"), helper,', cpp)
+        self.assertIn('QStringLiteral("--disable-internal-agent")', cpp)
         self.assertIn('QStringLiteral("is-enabled")', cpp)
         self.assertNotIn('startDetached', cpp)
         self.assertNotIn('"/bin/sh"', cpp)

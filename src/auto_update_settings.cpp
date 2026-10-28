@@ -43,13 +43,12 @@ void AutoUpdateSettings::setAutoUpdatesEnabled(bool enabled)
     }
 
     m_error.clear();
-    m_requested = enabled;
     m_operation = Operation::Change;
     Q_EMIT stateChanged();
     // Never run shell command strings or elevate the GUI. This fixed helper
     // validates only enable/disable; Polkit prompts for admin authorization.
     m_process.start(QStringLiteral("/usr/bin/pkexec"),
-                    {QStringLiteral("/usr/bin/bash"), helper,
+                    {QStringLiteral("--disable-internal-agent"), QStringLiteral("/usr/bin/bash"), helper,
                      enabled ? QStringLiteral("enable") : QStringLiteral("disable")});
 }
 
