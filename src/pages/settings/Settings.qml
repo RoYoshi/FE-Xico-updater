@@ -65,6 +65,65 @@ FC.FormCardPage {
         }
     }
 
+
+    // System-level bootc timer control (not a user-local preference).
+    FC.FormHeader {
+        title: i18n("Automatic OS Updates")
+    }
+
+    FC.FormCard {
+        FC.FormCheckDelegate {
+            id: autoUpdateCheckbox
+            text: i18n("Enable automatic OS updates")
+            description: i18n("The bootc update timer checks for new OS images and may automatically reboot the computer to apply them. Do not enable during unattended games or work.")
+            enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
+            checked: AutoUpdateSettings.enabled
+            onClicked: {
+                const requested = checked;
+                // Rebind immediately: reflect actual timer state until the
+                // privileged command succeeds and a new status is read.
+                checked = Qt.binding(() => AutoUpdateSettings.enabled);
+                confirmation.requested = requested;
+                confirmation.open();
+            }
+        }
+
+        FC.FormTextDelegate {
+            text: AutoUpdateSettings.statusText
+            description: AutoUpdateSettings.errorText.length > 0
+                ? AutoUpdateSettings.errorText
+                : i18n("Changes request an administrator password. Manual updates remain available when disabled.")
+        }
+
+        FC.FormButtonDelegate {
+            text: i18n("Refresh automatic update status")
+            icon.name: "view-refresh"
+            enabled: !AutoUpdateSettings.busy
+            onClicked: AutoUpdateSettings.refresh()
+        }
+    }
+
+    Dialog {
+        id: confirmation
+        property bool requested: false
+        title: requested ? i18n("Enable automatic OS updates?") : i18n("Disable automatic OS updates?")
+        modal: true
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        anchors.centerIn: Overlay.overlay
+        width: Math.min(page.width - Kirigami.Units.gridUnit * 2, Kirigami.Units.gridUnit * 25)
+        contentItem: Label {
+            wrapMode: Text.WordWrap
+            text: confirmation.requested
+                ? i18n("The stock bootc update timer can download and install an OS image and automatically reboot your computer. You may be asked for an administrator password. Continue?")
+                : i18n("Stop future automatic OS update checks? This does not cancel an update already running. You may be asked for an administrator password.")
+        }
+        onAccepted: AutoUpdateSettings.setAutoUpdatesEnabled(requested)
+    }
+
+    Component.onCompleted: {
+        if (!QmlSmokeTest) AutoUpdateSettings.refresh();
+    }
+
     // ─────────────────────────────────────────────────────────
     // Interface
     // ─────────────────────────────────────────────────────────

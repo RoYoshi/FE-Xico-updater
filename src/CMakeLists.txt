@@ -15,6 +15,8 @@ target_sources(fe-xico-updater
     utils.cpp
     native_operation.cpp
     native_operation.h
+    auto_update_settings.cpp
+    auto_update_settings.h
     resources.qrc
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/system_update.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/system_update.h
