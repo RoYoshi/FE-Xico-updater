@@ -118,9 +118,14 @@ void AutoUpdateSettings::processFinished(int exitCode, QProcess::ExitStatus stat
             m_error = i18n("Update settings were not changed (authentication cancelled or service error). %1", response);
         else
             m_error.clear();
-        Q_EMIT stateChanged();
         // Read the real systemd and on-disk state; never trust the clicked UI.
+        const QString changeError = m_error;
+        Q_EMIT stateChanged();
         refresh();
+        if (!changeError.isEmpty()) {
+            m_error = changeError; // Keep authentication failures visible.
+            Q_EMIT stateChanged();
+        }
         return;
     }
     Q_EMIT stateChanged();

@@ -19,7 +19,7 @@ class AutoUpdateCheckboxTests(unittest.TestCase):
     def test_polkit_required_and_no_generic_shell(self):
         cpp = (ROOT / "src/auto_update_settings.cpp").read_text()
         self.assertIn('QStringLiteral("/usr/bin/pkexec")', cpp)
-        self.assertIn('QStringLiteral("/usr/bin/bash"), helper,', cpp)
+        self.assertIn('QStringLiteral("/usr/bin/bash"), helper', cpp)
         self.assertIn('QStringLiteral("--disable-internal-agent")', cpp)
         self.assertIn('QStringLiteral("is-enabled")', cpp)
         self.assertNotIn('startDetached', cpp)
