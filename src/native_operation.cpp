@@ -2,6 +2,10 @@
 #include "native_operation.h"
 #include "utils.h"
 #include <KLocalizedString>
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QGuiApplication>
+#include <QVariantMap>
 #include <QJsonDocument>
 #include <QRegularExpression>
 #include <memory>
@@ -71,6 +75,50 @@ static QString resultText(const QJsonObject &result)
         : i18n("Deployment status refreshed. No deployment is pending for the next boot.");
 }
 
+// Plasma desktop notifications for checks that complete with the updater
+// minimized or inactive. The foreground uses its normal Kirigami feedback.
+static void notifyBackgroundCheck(bool success, const QJsonObject &result)
+{
+    if (QGuiApplication::applicationState() == Qt::ApplicationActive)
+        return;
+    QString title;
+    QString body;
+    if (!success) {
+        title = i18n("FE-XicoOS update check failed");
+        body = i18n("An OS update check encountered an error. Open FE-Xico Updater for details.");
+    } else {
+        const auto outcome = result.value(u"outcome"_s).toString();
+        if (outcome == u"up-to-date"_s) {
+            title = i18n("No FE-XicoOS updates");
+            body = i18n("Your OS image is up to date.");
+        } else if (outcome == u"update-available"_s) {
+            title = i18n("FE-XicoOS update available");
+            body = i18n("A new OS image is available. Open FE-Xico Updater to stage it.");
+        } else if (outcome == u"already-staged"_s) {
+            title = i18n("FE-XicoOS update ready");
+            body = i18n("An update is staged. Restart when you are ready.");
+        } else if (outcome == u"download-only"_s) {
+            title = i18n("FE-XicoOS download preserved");
+            body = i18n("A locked download-only deployment exists. Review it manually.");
+        } else {
+            title = i18n("FE-XicoOS update check completed");
+            body = resultText(result);
+        }
+    }
+    if (!QDBusConnection::sessionBus().isConnected())
+        return;
+    auto message = QDBusMessage::createMethodCall(
+        QStringLiteral("org.freedesktop.Notifications"),
+        QStringLiteral("/org/freedesktop/Notifications"),
+        QStringLiteral("org.freedesktop.Notifications"),
+        QStringLiteral("Notify"));
+    message.setArguments({
+        QStringLiteral("FE-Xico Updater"), uint(0),
+        QStringLiteral("system-software-update"), title, body,
+        QStringList{}, QVariantMap{}, int(10000)});
+    QDBusConnection::sessionBus().asyncCall(message);
+}
+
 void runNativeOperation(Console::Model *console, const QString &command, const QString &action, QJSValue callback)
 {
     if (!appState.allowCommands()) {
@@ -100,6 +148,8 @@ void runNativeOperation(Console::Model *console, const QString &command, const Q
             console->newLine(message, Console::LogLevel::Error);
         }
         appState.setCommandSucceeded(success);
+        if (action == u"check"_s)
+            notifyBackgroundCheck(success, *result);
         if (action == u"rollback"_s)
             appState.setRollbackRunning(false);
         else
