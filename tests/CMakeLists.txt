@@ -17,3 +17,5 @@ set_tests_properties(native-updater PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offs
 
 # No privilege escalation: static GUI/backend contract tests only.
 add_test(NAME auto-update-checkbox-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_auto_updates_checkbox.py)
+
+add_test(NAME background-notifications-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_background_notifications.py)

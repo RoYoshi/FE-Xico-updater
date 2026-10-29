@@ -17,6 +17,12 @@ FC.FormCardPage {
     readonly property color feXicoGreen: "#00FF00"
     readonly property color feXicoMagenta: "#FF00FF"
     readonly property color feXicoSilver: "#C0C0C0"
+    readonly property var hourLabels: [
+        "00:00", "01:00", "02:00", "03:00", "04:00", "05:00",
+        "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
+        "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
+        "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
+    ]
 
     Kirigami.Theme.highlightColor: feXicoMagenta
 
@@ -75,7 +81,7 @@ FC.FormCardPage {
         FC.FormCheckDelegate {
             id: autoUpdateCheckbox
             text: i18n("Enable automatic OS updates")
-            description: i18n("The bootc update timer checks for new OS images and may automatically reboot the computer to apply them. Do not enable during unattended games or work.")
+            description: i18n("The FE-XicoOS timer checks and stages OS images outside active hours. It NEVER automatically reboots your PC. Manual updates remain available.")
             enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
             checked: AutoUpdateSettings.enabled
             onClicked: {
@@ -92,7 +98,53 @@ FC.FormCardPage {
             text: AutoUpdateSettings.statusText
             description: AutoUpdateSettings.errorText.length > 0
                 ? AutoUpdateSettings.errorText
-                : i18n("Changes request an administrator password. Manual updates remain available when disabled.")
+                : i18n("Changes require an administrator password. The updater stages new OS images without rebooting.")
+        }
+
+        FC.FormTextDelegate {
+            text: i18n("Active hours (local time)")
+            description: i18n("Scheduled checks and downloads pause during this window. Start is inclusive; end is exclusive. Equal hours protect all day. Manual updates are unaffected.")
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.leftMargin: Kirigami.Units.largeSpacing
+            Layout.rightMargin: Kirigami.Units.largeSpacing
+            Layout.bottomMargin: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.largeSpacing
+
+            Label {
+                text: i18n("From")
+                Layout.alignment: Qt.AlignVCenter
+            }
+            ComboBox {
+                id: activeStartPicker
+                Layout.fillWidth: true
+                model: page.hourLabels
+                currentIndex: AutoUpdateSettings.startHour
+                enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
+                onActivated: {
+                    const selectedHour = currentIndex;
+                    currentIndex = Qt.binding(() => AutoUpdateSettings.startHour);
+                    AutoUpdateSettings.setActiveHours(selectedHour, AutoUpdateSettings.endHour);
+                }
+            }
+            Label {
+                text: i18n("To")
+                Layout.alignment: Qt.AlignVCenter
+            }
+            ComboBox {
+                id: activeEndPicker
+                Layout.fillWidth: true
+                model: page.hourLabels
+                currentIndex: AutoUpdateSettings.endHour
+                enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
+                onActivated: {
+                    const selectedHour = currentIndex;
+                    currentIndex = Qt.binding(() => AutoUpdateSettings.endHour);
+                    AutoUpdateSettings.setActiveHours(AutoUpdateSettings.startHour, selectedHour);
+                }
+            }
         }
 
         FC.FormButtonDelegate {
@@ -114,8 +166,8 @@ FC.FormCardPage {
         contentItem: Label {
             wrapMode: Text.WordWrap
             text: confirmation.requested
-                ? i18n("The stock bootc update timer can download and install an OS image and automatically reboot your computer. You may be asked for an administrator password. Continue?")
-                : i18n("Stop future automatic OS update checks? This does not cancel an update already running. You may be asked for an administrator password.")
+                ? i18n("FE-XicoOS will automatically check and stage updates OUTSIDE your active hours. Your PC will NEVER restart without your action. Authenticate to continue?")
+                : i18n("Stop future scheduled checks and staging? An already running update is not cancelled. Administrator authentication may be required.")
         }
         onAccepted: AutoUpdateSettings.setAutoUpdatesEnabled(requested)
     }
