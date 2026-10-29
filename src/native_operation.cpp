@@ -4,6 +4,7 @@
 #include <KLocalizedString>
 #include <QDBusConnection>
 #include <QDBusMessage>
+#include <QDBusPendingCall>
 #include <QGuiApplication>
 #include <QVariantMap>
 #include <QJsonDocument>
