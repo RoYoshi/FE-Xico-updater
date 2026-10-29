@@ -123,7 +123,11 @@ FC.FormCardPage {
                 model: page.hourLabels
                 currentIndex: AutoUpdateSettings.startHour
                 enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
-                onActivated: AutoUpdateSettings.setActiveHours(currentIndex, activeEndPicker.currentIndex)
+                onActivated: {
+                    const selectedHour = currentIndex;
+                    currentIndex = Qt.binding(() => AutoUpdateSettings.startHour);
+                    AutoUpdateSettings.setActiveHours(selectedHour, AutoUpdateSettings.endHour);
+                }
             }
             Label {
                 text: i18n("To")
@@ -135,7 +139,11 @@ FC.FormCardPage {
                 model: page.hourLabels
                 currentIndex: AutoUpdateSettings.endHour
                 enabled: AutoUpdateSettings.available && !AutoUpdateSettings.busy
-                onActivated: AutoUpdateSettings.setActiveHours(activeStartPicker.currentIndex, currentIndex)
+                onActivated: {
+                    const selectedHour = currentIndex;
+                    currentIndex = Qt.binding(() => AutoUpdateSettings.endHour);
+                    AutoUpdateSettings.setActiveHours(AutoUpdateSettings.startHour, selectedHour);
+                }
             }
         }
 
