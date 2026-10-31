@@ -187,6 +187,23 @@ private Q_SLOTS:
             QVERIFY(!engine.evaluate(expression).toBool());
         }
     }
+    void feXicoIdentityArtworkNeverFallsBackToTux() {
+        QFile page(QStringLiteral(SOURCE_PATH) + u"/pages/system_update/SystemUpdate.qml"_s);
+        QVERIFY(page.open(QIODevice::ReadOnly));
+        const auto source = QString::fromUtf8(page.readAll());
+        QVERIFY(source.contains(u"file:///usr/share/pixmaps/FE-XicoHat.png"_s));
+        QVERIFY(source.contains(u"onStatusChanged:"_s));
+        QVERIFY(source.contains(u"useBundledFallback"_s));
+        QVERIFY(source.contains(u"qrc:/updaterLogo"_s));
+        QVERIFY(!source.contains(u"qrc:/fallbackLogo"_s));
+
+        QFile resources(QStringLiteral(SOURCE_PATH) + u"/resources.qrc"_s);
+        QVERIFY(resources.open(QIODevice::ReadOnly));
+        const auto manifest = QString::fromUtf8(resources.readAll());
+        QVERIFY(manifest.contains(u"resources/FE-XicoUpdater.png"_s));
+        QVERIFY(!manifest.contains(u"Tux.png"_s));
+        QVERIFY(!manifest.contains(u"fallbackLogo"_s));
+    }
     void untrustedConfigAndBoundedLogs() {
         QTemporaryDir temp;
         QFile file(temp.filePath(u"fexico-untrusted-test.ini"_s));

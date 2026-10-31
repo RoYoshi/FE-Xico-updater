@@ -1,6 +1,5 @@
 <RCC version="1.0">
     <qresource prefix="/">
-        <file alias="fallbackLogo">resources/Tux.png</file>
         <file alias="updaterLogo">resources/FE-XicoUpdater.png</file>
     </qresource>
 </RCC>

@@ -272,19 +272,29 @@ Kirigami.Page {
                     Kirigami.Units.iconSizes.huge
 
                 Image {
+                    id: osIdentityLogo
                     anchors.fill: parent
 
-                    source:
-                        AppConfig.osAboutData.programLogo
-                            ? "file://"
-                                + AppConfig.osAboutData.programLogo
-                            : "qrc:/fallbackLogo"
+                    // The OS artwork is installed as a real PNG by FE-XicoOS.
+                    // The metadata previously pointed at an embedded-raster SVG
+                    // and could be rejected with unsafe /etc permissions.
+                    // Do not depend on that metadata to draw the OS identity.
+                    property bool useBundledFallback: false
+                    source: useBundledFallback
+                        ? "qrc:/updaterLogo"
+                        : "file:///usr/share/pixmaps/FE-XicoHat.png"
 
-                    sourceSize:
-                        Qt.size(width, height)
+                    // Never show the generic/Tux image when the OS PNG is missing
+                    // or unreadable; the updater's own embedded artwork is branded.
+                    onStatusChanged: {
+                        if (status === Image.Error && !useBundledFallback)
+                            useBundledFallback = true;
+                    }
 
+                    sourceSize: Qt.size(width, height)
                     fillMode: Image.PreserveAspectFit
-                    antialiasing: true
+                    smooth: true
+                    mipmap: true
                 }
             }
 
