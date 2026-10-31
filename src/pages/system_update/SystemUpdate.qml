@@ -276,7 +276,7 @@ Kirigami.Page {
 
                     source:
                         AppConfig.osAboutData.programLogo
-                            ? "file:/"
+                            ? "file://"
                                 + AppConfig.osAboutData.programLogo
                             : "qrc:/fallbackLogo"
 
