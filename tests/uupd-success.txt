@@ -1,0 +1,199 @@
+Starting uupd-manual.service - Universal Blue Update Oneshot Service - Manual Activation...
+{"level":"DEBUG","msg":"Using rpm-ostree fallback as system driver"}
+{"level":"DEBUG","msg":"rpm-ostree --check reported no updates, verifying via skopeo","module":"system"}
+{"level":"DEBUG","msg":"Executed skopeo fallback check","module":"system","update":false}
+{"level":"DEBUG","msg":"System Updater module status","enabled":true,"disabled_by_config":false,"driver_enabled":true,"update_available":false}
+{"level":"DEBUG","msg":"System update check reported no updates, running the system update to verify","module":"system"}
+{"level":"DEBUG","msg":"System module","module":"system","module_configuration":{"Title":"System","Description":"rpm-ostree","Enabled":true,"MultiUser":false,"DryRun":false,"UserDescription":null}}
+{"level":"INFO","msg":"Updating","module":"system","status":"starting","output":"System module is starting.","title":"System","description":"rpm-ostree","progress":0,"total":4,"step_progress":0,"overall":0}
+{"level":"DEBUG","msg":"Executing update","module":"system","cli":["/usr/bin/rpm-ostree","upgrade"]}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"Pulling manifest: ostree-image-signed:docker://ghcr.io/ublue-os/bazzite-dx:stable"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"Checking out tree ab46e28...done"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"Enabled rpm-md repositories: copr:copr.fedorainfracloud.org:ublue-os:akmods updates fedora terra-extras terra hardware_razer copr:copr.fedorainfracloud.org:hazel-bunny:ricing updates-archive"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"Importing rpm-md...done"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'copr:copr.fedorainfracloud.org:ublue-os:akmods' (cached); generated: 2026-09-22T23:40:21Z solvables: 121"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'updates' (cached); generated: 2026-10-31T01:01:52Z solvables: 31325"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'fedora' (cached); generated: 2026-04-22T13:34:32Z solvables: 76354"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'terra-extras' (cached); generated: 2026-10-30T20:23:14Z solvables: 335"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'terra' (cached); generated: 2026-10-31T22:41:48Z solvables: 6184"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'hardware_razer' (cached); generated: 2026-08-08T15:30:14Z solvables: 23"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'copr:copr.fedorainfracloud.org:hazel-bunny:ricing' (cached); generated: 2026-10-28T06:28:43Z solvables: 366"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"rpm-md repo 'updates-archive' (cached); generated: 2026-10-31T02:21:19Z solvables: 50850"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"Resolving dependencies...done"}
+{"level":"INFO","msg":"Command output","module":"system","status":"running","output":"No upgrade available."}
+{"level":"INFO","msg":"System module has completed.","module":"system","status":"finished","exit_code":0,"output":"System module has completed."}
+{"level":"DEBUG","msg":"Brew module","module":"brew","module_configuration":{"Title":"Brew","Description":"CLI Apps","Enabled":true,"MultiUser":false,"DryRun":false,"UserDescription":null}}
+{"level":"INFO","msg":"Updating","module":"brew","status":"starting","output":"Brew module is starting.","title":"Brew","description":"CLI Apps","progress":1,"total":4,"step_progress":0,"overall":25}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Updating Homebrew..."}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Already up-to-date."}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Downloading bottle manifests"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest glab (1.126.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest hugo (0.169.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest butane (2.28.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest simdjson (5.1.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest simdutf (9.3.3)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest atuin (18.24.4)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest node@24 (24.22.2_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest git (2.56.0_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle Manifest node (26.13.0_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Fetching downloads for: simdjson, node@24, hugo, simdutf, node, git, renovate, butane, atuin, glab and ublue-os/tap/antigravity-linux"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle simdutf (9.3.3)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ API Source renovate.rb"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle butane (2.28.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Formula renovate (44.198.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle simdjson (5.1.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle atuin (18.24.4)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle glab (1.126.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle node@24 (24.22.2_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle git (2.56.0_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle hugo (0.169.0)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Bottle node (26.13.0_2)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"✔︎ Cask antigravity-linux (2.28.2,5937220255875072)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading simdjson"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  5.0.5 -> 5.1.0 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring simdjson--5.1.0.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/simdjson/5.1.0: 19 files, 11.5MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading node@24"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  24.22.1 -> 24.22.2_2 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring node@24--24.22.2_2.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/node@24/24.22.2_2: 2,103 files, 104.7MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading hugo"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  0.168.0 -> 0.169.0 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring hugo--0.169.0.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/hugo/0.169.0: 54 files, 95.4MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading simdutf"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  9.3.2_1 -> 9.3.3 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring simdutf--9.3.3.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/simdutf/9.3.3: 66 files, 3.6MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading node"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  26.12.1_1 -> 26.13.0_2 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring node--26.13.0_2.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/node/26.13.0_2: 2,077 files, 115.7MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading git"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  2.56.0_1 -> 2.56.0_2 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring git--2.56.0_2.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/git/2.56.0_2: 1,732 files, 71MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading renovate"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  44.181.0 -> 44.198.0 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"\u001b[34m==>\u001b[0m \u001b[1mnpm install --loglevel=silly --global --build-from-source --min-release-age=\u001b[0m"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/renovate/44.198.0: 41,008 files, 245.3MB, built in 51 seconds"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading butane"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  0.29.0 -> 2.28.0 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring butane--2.28.0.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/butane/2.28.0: 8 files, 9.8MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading atuin"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  18.24.2 -> 18.24.4 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring atuin--18.24.4.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/atuin/18.24.4: 15 files, 76.9MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading glab"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  1.124.0 -> 1.126.0 "}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Pouring glab--1.126.0.x86_64_linux.bottle.tar.gz"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Warning: The following dependents of upgraded formulae are outdated but will not"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"be upgraded because they are not bottled:"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  renovate"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  /home/linuxbrew/.linuxbrew/Cellar/glab/1.126.0: 10 files, 49.9MB"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgrading antigravity-linux"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  2.26.0,6546645232517120 -> 2.28.2,5937220255875072"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"All dependencies satisfied."}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Backing up Generic Artifact 'antigravity.desktop' to '/home/linuxbrew/.linuxbrew/Caskroom/antigravity-linux/2.26.0,6546645232517120/antigravity.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Removing Generic Artifact '/home/rfrench/.local/share/applications/antigravity.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Backing up Generic Artifact 'antigravity-url-handler.desktop' to '/home/linuxbrew/.linuxbrew/Caskroom/antigravity-linux/2.26.0,6546645232517120/antigravity-url-handler.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Removing Generic Artifact '/home/rfrench/.local/share/applications/antigravity-url-handler.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Backing up Generic Artifact 'antigravity.png' to '/home/linuxbrew/.linuxbrew/Caskroom/antigravity-linux/2.26.0,6546645232517120/antigravity.png'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Removing Generic Artifact '/home/rfrench/.local/share/icons/hicolor/512x512/apps/antigravity.png'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Unlinking Binary '/home/linuxbrew/.linuxbrew/bin/antigravity'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Moving Generic Artifact 'antigravity.desktop' to '/home/rfrench/.local/share/applications/antigravity.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Moving Generic Artifact 'antigravity-url-handler.desktop' to '/home/rfrench/.local/share/applications/antigravity-url-handler.desktop'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Moving Generic Artifact 'antigravity.png' to '/home/rfrench/.local/share/icons/hicolor/512x512/apps/antigravity.png'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Linking Binary 'antigravity' to '/home/linuxbrew/.linuxbrew/bin/antigravity'"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Purging files for version 2.26.0,6546645232517120 of Cask antigravity-linux"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"🍺  antigravity-linux was successfully upgraded!"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Cleanup"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/Cask/antigravity-linux--2.26.0,6546645232517120.tar.gz... (181.4MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/butane/0.29.0... (7 files, 10.1MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/glab/1.124.0... (10 files, 49.4MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/simdjson/5.0.5... (19 files, 11.3MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/atuin/18.24.2... (15 files, 74MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/hugo/0.168.0... (54 files, 95.2MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/simdutf/9.3.2_1... (66 files, 3.6MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/atuin--18.24.2... (25.5MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/butane--0.29.0... (3.6MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/simdjson--5.0.5... (2.3MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/glab--1.124.0... (17.7MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/butane_bottle_manifest--0.29.0... (14.9KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/glab_bottle_manifest--1.124.0... (13.1KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/atuin_bottle_manifest--18.24.2... (17.2KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/simdjson_bottle_manifest--5.0.5... (13.8KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/hugo--0.168.0... (30.4MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/simdutf--9.3.2_1... (905.1KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/hugo_bottle_manifest--0.168.0... (12.8KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/simdutf_bottle_manifest--9.3.2_1... (19.8KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/git/2.56.0_1... (1,732 files, 71MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/node@24/24.22.1... (2,103 files, 104.7MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/node/26.12.1_1... (2,077 files, 115.7MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/git--2.56.0_1... (26.2MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/git_bottle_manifest--2.56.0_1... (88.4KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/node--26.12.1_1... (34.3MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/node_bottle_manifest--26.12.1_1... (146.1KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/node@24--24.22.1... (31.2MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/node@24_bottle_manifest--24.22.1... (119.9KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/linuxbrew/.linuxbrew/Cellar/renovate/44.181.0... (40,853 files, 244.7MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/renovate--44.181.0... (52.8MB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Removing: /home/rfrench/.cache/Homebrew/renovate_bottle_manifest--44.181.0... (165.7KB)"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Disable this behaviour by setting `HOMEBREW_NO_INSTALL_CLEANUP=1`."}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Hide these hints with `HOMEBREW_NO_ENV_HINTS=1` (see `man brew`)."}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Caveats"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Bash completion has been installed to:"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  /home/linuxbrew/.linuxbrew/etc/bash_completion.d"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> atuin"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"To start atuin now and restart at login:"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  brew services start atuin"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"Or, if you don't want/need a background service you can just run:"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  /home/linuxbrew/.linuxbrew/opt/atuin/bin/atuin daemon start"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> antigravity-linux"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"If authentication fails or the browser doesn't open Antigravity, try running:"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  xdg-mime default antigravity-url-handler.desktop x-scheme-handler/antigravity"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"  update-desktop-database ~/.local/share/applications"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> Upgraded 11 outdated packages"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"simdjson                        5.0.5                   -> 5.1.0"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"node@24                         24.22.1                 -> 24.22.2_2"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"hugo                            0.168.0                 -> 0.169.0"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"simdutf                         9.3.2_1                 -> 9.3.3"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"node                            26.12.1_1               -> 26.13.0_2"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"git                             2.56.0_1                -> 2.56.0_2"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"renovate                        44.181.0                -> 44.198.0"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"butane                          0.29.0                  -> 2.28.0"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"atuin                           18.24.2                 -> 18.24.4"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"glab                            1.124.0                 -> 1.126.0"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"ublue-os/tap/antigravity-linux  2.26.0,6546645232517120 -> 2.28.2,5937220255875072"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"==> 1 homebrew/core formula built from source"}
+{"level":"INFO","msg":"Command output","module":"brew","status":"running","output":"renovate"}
+{"level":"INFO","msg":"Brew module has completed.","module":"brew","status":"finished","exit_code":0,"output":"Brew module has completed."}
+{"level":"DEBUG","msg":"Flatpak module","module":"flatpak","module_configuration":{"Title":"Flatpak","Description":"System Apps","Enabled":true,"MultiUser":true,"DryRun":false,"UserDescription":"Apps for User:"}}
+{"level":"INFO","msg":"Updating","module":"flatpak","status":"starting","output":"Flatpak module is starting.","title":"Flatpak","description":"System Apps","progress":2,"total":4,"step_progress":0,"overall":50}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk.Locale is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk.Locale is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Sdk is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Sdk.Locale is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Platform.GL.default is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Platform.GL.default is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":""}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Nothing to update."}
+{"level":"INFO","msg":"Updating","module":"flatpak","status":"running","output":"Updating Flatpak (Apps for User: rfrench)","title":"Flatpak","description":"Apps for User: rfrench","progress":2,"total":4,"step_progress":0,"overall":50}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk.Locale is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.kde.Sdk.Locale is end-of-life, with reason: We strongly recommend moving to the latest stable version of the Platform and SDK"}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Sdk is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Sdk.Locale is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Platform.GL.default is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Info: org.freedesktop.Platform.GL.default is end-of-life, with reason: org.freedesktop.Platform 24.08 is no longer receiving fixes and security updates. Please update to a supported runtime version."}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":""}
+{"level":"INFO","msg":"Command output","module":"flatpak","status":"running","output":"Nothing to update."}
+{"level":"INFO","msg":"Flatpak module has completed.","module":"flatpak","status":"finished","exit_code":0,"output":"Flatpak module has completed."}
+{"level":"INFO","msg":"Updates Completed Successfully"}
+uupd-manual.service: Deactivated successfully.
+Finished uupd-manual.service - Universal Blue Update Oneshot Service - Manual Activation.
+uupd-manual.service: Consumed 1.440s CPU time over 2min 24.586s wall clock time, 35.6M memory peak.
