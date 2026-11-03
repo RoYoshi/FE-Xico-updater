@@ -4,7 +4,7 @@
 
 This is a **work in progress**, adapted from [Bazzite Updater](https://github.com/rfrench3/bazzite_updater). The application is FE-Xico-branded, but it currently delegates updates and rollback to existing system utilities; it is not an independent replacement for those utilities.
 
-![FE-Xico hat branding](io.github.royoshi.fexicoupdater.svg)
+<img src="icons/hicolor/256x256/apps/io.github.royoshi.fexicoupdater.png" alt="FE-Xico Updater icon" width="128">
 
 ## Automatic bootc updates (FE-XicoOS)
 
@@ -79,7 +79,7 @@ For release tooling, the RPM GitHub Actions workflow builds `fe-xico-updater.spe
 
 ## FE-Xico branding
 
-The updater uses the `io.github.royoshi.fexicoupdater` application ID and FE-Xico's neon green (`#00FF00`) and magenta (`#FF00FF`). The packaged application icon is `io.github.royoshi.fexicoupdater.svg`, using the official FE-Xico hat artwork. On FE-Xico systems, the OS About page also references the FE-Xico hat icon.
+The updater uses the `io.github.royoshi.fexicoupdater` application ID and FE-Xico's neon green (`#00FF00`) and magenta (`#FF00FF`). The application icon is RoYoshi's FE-Xico top hat with a magenta update arrow. It is installed as raster `io.github.royoshi.fexicoupdater.png` icons at every hicolor size (16–512 px), and as the embedded window-icon fallback `src/resources/FE-XicoUpdater.png`. All of them are built from the pinned original in `branding/` by `scripts/build_icons.py`, which needs Pillow and is not part of the CMake build. On FE-XicoOS, the OS About page shows the FE-XicoOS top hat (`programLogo` in `KAboutData_OS.json`).
 
 ## Credits and licensing
 

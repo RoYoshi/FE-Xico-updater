@@ -19,3 +19,5 @@ set_tests_properties(native-updater PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offs
 add_test(NAME auto-update-checkbox-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_auto_updates_checkbox.py)
 
 add_test(NAME background-notifications-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_background_notifications.py)
+
+add_test(NAME app-icon COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_app_icon.py)

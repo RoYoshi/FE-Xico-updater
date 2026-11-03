@@ -69,7 +69,7 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/%{appid}.desktop
 %{_kf6_bindir}/fe-xico-updater
 %{_kf6_datadir}/applications/%{appid}.desktop
 %{_kf6_metainfodir}/%{appid}.*.xml
-%{_kf6_datadir}/icons/hicolor/scalable/apps/%{appid}.svg
+%{_kf6_datadir}/icons/hicolor/*/apps/%{appid}.png
 %config(noreplace) /etc/fe-xico-updater/config.ini
 /etc/fe-xico-updater/
 

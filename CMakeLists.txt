@@ -109,7 +109,8 @@ endif()
 ### Install desktop files ###
 
 install(FILES io.github.royoshi.fexicoupdater.desktop DESTINATION ${KDE_INSTALL_APPDIR})
-install(FILES io.github.royoshi.fexicoupdater.svg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps/)
+# Raster application icon at every hicolor size (built by scripts/build_icons.py).
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/icons/hicolor" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/icons)
 install(FILES io.github.royoshi.fexicoupdater.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 if(_USE_XDG_CONFIG)
