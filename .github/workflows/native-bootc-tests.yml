@@ -11,7 +11,7 @@ jobs:
     name: Native updater (Fedora ${{ matrix.fedora }})
     runs-on: ubuntu-24.04
     container: fedora:${{ matrix.fedora }}
-    timeout-minutes: 30
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -19,16 +19,19 @@ jobs:
         fedora: [44, 45]
     steps:
       - name: Bootstrap Git for recursive checkout
+        timeout-minutes: 5
         run: dnf5 -y install git
       - uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Install Fedora Qt/KDE build and runtime dependencies
+        timeout-minutes: 12
         run: |
           dnf5 -y install cmake ninja-build gcc-c++ git python3 extra-cmake-modules pkgconf-pkg-config gettext mesa-libGLU-devel SDL3-devel qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtsvg-devel kf6-kirigami-devel kf6-kirigami-addons-devel kf6-kcoreaddons-devel kf6-kconfig-devel kf6-kcolorscheme-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-qqc2-desktop-style dbus-daemon
       # Failures are also posted as annotations, which stay readable through
       # the Checks API when raw job logs are not.
       - name: Configure and compile native application and tests
+        timeout-minutes: 15
         shell: bash
         run: |
           set -euo pipefail
@@ -40,16 +43,18 @@ jobs:
             exit 1
           fi
       - name: Qt process and native result tests
+        timeout-minutes: 8
         shell: bash
         run: |
           set -euo pipefail
-          if ! ctest --test-dir build --output-on-failure 2>&1 | tee ctest.log; then
-            grep -E "FAIL!|Loc: |Actual|Expected|AssertionError|Error|failed" ctest.log | head -n 40 | while IFS= read -r line; do
+          if ! ctest --test-dir build --output-on-failure --timeout 180 2>&1 | tee ctest.log; then
+            grep -E "FAIL!|Loc: |Actual|Expected|AssertionError|Error|failed|Timeout|\\*\\*\\*" ctest.log | head -n 40 | while IFS= read -r line; do
               printf '::error title=Tests (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
             done
             exit 1
           fi
       - name: Install and load every QML page offscreen
+        timeout-minutes: 3
         shell: bash
         run: |
           set -euo pipefail
@@ -62,6 +67,7 @@ jobs:
             exit 1
           fi
       - name: Missing configuration and untrusted XDG directory
+        timeout-minutes: 3
         shell: bash
         run: |
           set -euo pipefail
@@ -80,6 +86,7 @@ jobs:
       # Screenshots of simulated states for design review. Every image carries a
       # "Simulated preview" footer; no update, check, rollback or restart runs.
       - name: Render simulated-state previews
+        timeout-minutes: 10
         if: matrix.fedora == 45
         continue-on-error: true
         shell: bash
