@@ -31,6 +31,7 @@ private Q_SLOTS:
         appState.setRollbackRunning(false);
         appState.setCommandSucceeded(false);
         appState.setResult({});
+        appState.clearOutcome();
     }
     void processCompletion_data() {
         QTest::addColumn<QString>("mode"); QTest::addColumn<int>("expected");
@@ -109,8 +110,86 @@ private Q_SLOTS:
             QVERIFY(appState.resultMessage().contains(u"Reboot will not apply"_s));
             QVERIFY(!appState.rebootRequired());
         }
+        // The dashboard's verified outcome and check time follow the result.
+        if (success) {
+            QVERIFY(!appState.outcome().isEmpty());
+            QVERIFY(appState.outcome() != u"failed"_s);
+            if (action == u"check"_s || action == u"upgrade"_s) {
+                QVERIFY(appState.lastCheckedAt().isValid());
+                QCOMPARE(appState.lastCheckOutcome(), appState.outcome());
+            } else {
+                QVERIFY(!appState.lastCheckedAt().isValid());
+                QVERIFY(appState.lastCheckOutcome().isEmpty());
+            }
+        } else {
+            QCOMPARE(appState.outcome(), u"failed"_s);
+            QVERIFY(!appState.lastCheckedAt().isValid());
+            QVERIFY(appState.hostStatus().isEmpty());
+        }
         QVERIFY(appState.allowCommands()); QTest::qWait(30);
         QCOMPARE(engine.globalObject().property(u"calls"_s).toInt(), 1);
+    }
+    void failedCheckKeepsPreviousCheckTime() {
+        Console::Model model; QJSEngine engine;
+        engine.evaluate(u"var calls=0; function completed(c) { calls++; }"_s);
+        runNativeOperation(&model, command(u"noop"_s, u"check"_s), u"check"_s, engine.globalObject().property(u"completed"_s));
+        QTRY_COMPARE(engine.globalObject().property(u"calls"_s).toInt(), 1);
+        const auto checkedAt = appState.lastCheckedAt();
+        QVERIFY(checkedAt.isValid());
+        runNativeOperation(&model, command(u"fail"_s, u"check"_s), u"check"_s, engine.globalObject().property(u"completed"_s));
+        QTRY_COMPARE(engine.globalObject().property(u"calls"_s).toInt(), 2);
+        QCOMPARE(appState.outcome(), u"failed"_s);
+        QCOMPARE(appState.lastCheckedAt(), checkedAt);
+    }
+    void dashboardStates() {
+        // Evaluate the production derivation (status.js) without a GUI.
+        QFile file(QStringLiteral(SOURCE_PATH) + u"/pages/system_update/status.js"_s);
+        QVERIFY(file.open(QIODevice::ReadOnly));
+        QString source = QString::fromUtf8(file.readAll());
+        source.replace(u".pragma library"_s, QString());
+        QJSEngine engine;
+        QVERIFY(!engine.evaluate(source).isError());
+        auto state = [&](const QString &facts) {
+            const auto value = engine.evaluate(u"dashboardState("_s + facts + u")"_s);
+            return value.isError() ? u"error"_s : value.toString();
+        };
+        auto action = [&](const QString &s) { return engine.evaluate(u"primaryAction('"_s + s + u"')"_s).toString(); };
+        const QString booted = u"{image:{imageDigest:'sha256:a'}}"_s;
+        const QString host = u"{status:{booted:"_s + booted + u",staged:null,rollback:null,rollbackQueued:false}}"_s;
+        // Nothing read: never "up to date", even with a stale check outcome.
+        QCOMPARE(state(u"{host:{}}"_s), u"unknown"_s);
+        QCOMPARE(state(u"{host:{},lastCheckOutcome:'up-to-date'}"_s), u"unknown"_s);
+        QCOMPARE(action(u"unknown"_s), u"check"_s);
+        // Status read without a check is not "up to date".
+        QCOMPARE(state(u"{outcome:'status',host:"_s + host + u"}"_s), u"unchecked"_s);
+        QCOMPARE(state(u"{outcome:'status',lastCheckOutcome:'up-to-date',host:"_s + host + u"}"_s), u"up-to-date"_s);
+        // A cached newer digest wins over an older "up to date" check.
+        const QString cached = u"{status:{booted:{image:{imageDigest:'sha256:a'},cachedUpdate:{imageDigest:'sha256:b'}},staged:null,rollback:null,rollbackQueued:false}}"_s;
+        QCOMPARE(state(u"{lastCheckOutcome:'up-to-date',host:"_s + cached + u"}"_s), u"update-available"_s);
+        QCOMPARE(action(u"update-available"_s), u"update"_s);
+        const QString same = u"{status:{booted:{image:{imageDigest:'sha256:a'},cachedUpdate:{imageDigest:'sha256:a'}},staged:null,rollback:null,rollbackQueued:false}}"_s;
+        QCOMPARE(state(u"{host:"_s + same + u"}"_s), u"unchecked"_s);
+        // Pending deployments.
+        const QString staged = u"{status:{booted:"_s + booted + u",staged:{image:{}},rollback:null,rollbackQueued:false}}"_s;
+        QCOMPARE(state(u"{host:"_s + staged + u"}"_s), u"staged"_s);
+        QCOMPARE(action(u"staged"_s), u"restart"_s);
+        const QString locked = u"{status:{booted:"_s + booted + u",staged:{downloadOnly:true},rollback:null,rollbackQueued:false}}"_s;
+        QCOMPARE(state(u"{host:"_s + locked + u"}"_s), u"download-only"_s);
+        QCOMPARE(action(u"download-only"_s), u"review-deployments"_s);
+        const QString queued = u"{status:{booted:"_s + booted + u",staged:null,rollback:{},rollbackQueued:true}}"_s;
+        QCOMPARE(state(u"{host:"_s + queued + u"}"_s), u"rollback-staged"_s);
+        QCOMPARE(action(u"rollback-staged"_s), u"restart"_s);
+        // Running operations and failures.
+        QCOMPARE(state(u"{updateRunning:true,operation:'check',host:"_s + host + u"}"_s), u"checking"_s);
+        QCOMPARE(state(u"{updateRunning:true,operation:'upgrade',host:"_s + host + u"}"_s), u"updating"_s);
+        QCOMPARE(state(u"{updateRunning:true,operation:'status',host:{}}"_s), u"reading"_s);
+        QCOMPARE(state(u"{rollbackRunning:true,host:"_s + host + u"}"_s), u"rolling-back"_s);
+        QCOMPARE(action(u"checking"_s), u"progress"_s);
+        QCOMPARE(state(u"{outcome:'failed',lastCheckOutcome:'up-to-date',host:{}}"_s), u"failed"_s);
+        QCOMPARE(action(u"failed"_s), u"review-error"_s);
+        QCOMPARE(engine.evaluate(u"tone('up-to-date')"_s).toString(), u"positive"_s);
+        QCOMPARE(engine.evaluate(u"tone('failed')"_s).toString(), u"negative"_s);
+        QCOMPARE(engine.evaluate(u"tone('staged')"_s).toString(), u"attention"_s);
     }
     void actualControllerRouting() {
         QJSEngine engine;
@@ -135,7 +214,7 @@ private Q_SLOTS:
         QVERIFY(!page.isEmpty()); QVERIFY(!main.isEmpty());
         QVERIFY(!engine.evaluate(page + u"; var pageHandler=handleInput;"_s + main).isError());
         QVERIFY(!engine.evaluate(u"var updates=0,consoleEvents=0,dialogEvents=0,drawerEvents=0; "
-            "var updateAction={enabled:true}; var updateButton={animateClick:function(){updates++}}; "
+            "var mainAction={enabled:true,trigger:function(){updates++}}; "
             "var consoleDrawer={drawerOpen:false,handleInput:function(){consoleEvents++}}; "
             "var globalDrawer={drawerOpen:false,handleInput:function(){drawerEvents++}}; "
             "var root={activeDialog:null,pageStack:{currentItem:{handleInput:pageHandler}}};"_s).isError());
@@ -145,8 +224,8 @@ private Q_SLOTS:
         };
         check(u"onButtonEvent(0,true)"_s, 1);
         check(u"onButtonEvent(0,false)"_s, 1);
-        check(u"updateAction.enabled=false; onButtonEvent(0,true)"_s, 1);
-        check(u"updateAction.enabled=true; consoleDrawer.drawerOpen=true; onButtonEvent(0,true)"_s, 1);
+        check(u"mainAction.enabled=false; onButtonEvent(0,true)"_s, 1);
+        check(u"mainAction.enabled=true; consoleDrawer.drawerOpen=true; onButtonEvent(0,true)"_s, 1);
         QCOMPARE(engine.globalObject().property(u"consoleEvents"_s).toInt(), 1);
         check(u"globalDrawer.drawerOpen=true; onButtonEvent(0,true)"_s, 1);
         QCOMPARE(engine.globalObject().property(u"drawerEvents"_s).toInt(), 1);

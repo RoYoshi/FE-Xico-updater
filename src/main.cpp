@@ -42,6 +42,7 @@
 #include <unistd.h>
 
 #include "k_config.h"
+#include "preview_tour.h"
 #include "utils.h"
 
 inline constexpr float BASE_HEIGHT = 1080.0;
@@ -114,19 +115,21 @@ int main(int argc, char *argv[])
     KAboutData aboutData(u"fe-xico-updater"_s,
                          i18n("FE-Xico Updater"),
                          QStringLiteral(FE_XICO_UPDATER_VERSION_STRING),
-                         i18n("System update and rollback utility for FE-Xico"),
+                         i18n("FE-XicoOS system maintenance: updates, restart and rollback"),
                          KAboutLicense::Unknown, // Can't directly set v2-or-later here
                          i18n("© 2025-2026 Robert French; FE-Xico adaptation by RoYoshi"),
                          i18n("This application can be used through a controller or keyboard to perform various update-related system tasks!"),
                          u"https://github.com/RoYoshi/FE-Xico-Updater"_s,
                          u"https://github.com/RoYoshi/FE-Xico-Updater/issues"_s);
     aboutData.setLicense(KAboutLicense::GPL_V2, KAboutLicense::OrLaterVersions);
-    aboutData.addCredit(u"Gareth Widlansky"_s, u"Uupd integration"_s, u""_s, u"https://github.com/gerblesh"_s);
+    // Historical credit: uupd integration in the original Bazzite Updater. FE-Xico
+    // Updater now uses the native FE-XicoOS bootc backend instead of uupd.
+    aboutData.addCredit(u"Gareth Widlansky"_s, i18n("Original Bazzite Updater contributor (uupd integration)"), u""_s, u"https://github.com/gerblesh"_s);
     aboutData.setDesktopFileName(FULL_APP_DOMAIN);
     KAboutData::setApplicationData(aboutData);
 
-    // Prefer KDE's installed scalable icon; retain the bundled PNG for
-    // development builds and sessions without the FE-Xico icon theme entry.
+    // Prefer the installed hicolor icon set; retain the bundled PNG for
+    // development builds and sessions without the installed icon.
     QGuiApplication::setWindowIcon(QIcon::fromTheme(FULL_APP_DOMAIN, QIcon(u":/updaterLogo"_s)));
     QGuiApplication::setDesktopFileName(FULL_APP_DOMAIN);
 
@@ -137,7 +140,15 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(u"sessionStorage"_s, sessionStorage);
     engine.rootContext()->setContextProperty(u"UseFullscreen"_s, UseFullscreen);
     const bool smokeTest = app.arguments().contains(u"--qml-smoke-test"_s);
-    engine.rootContext()->setContextProperty(u"QmlSmokeTest"_s, smokeTest);
+    // Design-review screenshots of simulated states (CI only). Like the smoke
+    // test, this disables every side effect; no operation is ever started.
+    const auto previewIndex = app.arguments().indexOf(u"--render-previews"_s);
+    const QString previewDir = previewIndex >= 0 ? app.arguments().value(previewIndex + 1) : QString();
+    const bool previewMode = !previewDir.isEmpty();
+    if (previewMode)
+        preparePreviewAppearance();
+    engine.rootContext()->setContextProperty(u"QmlSmokeTest"_s, smokeTest || previewMode);
+    engine.rootContext()->setContextProperty(u"PreviewMode"_s, previewMode);
     bool qmlFailed = false;
     QObject::connect(&engine, &QQmlEngine::warnings, &app, [&qmlFailed](const QList<QQmlError> &warnings) {
         for (const auto &warning : warnings) {
@@ -151,7 +162,9 @@ int main(int argc, char *argv[])
     engine.loadFromModule("io.github.royoshi.fexicoupdater", u"Main"_s);
     if (engine.rootObjects().isEmpty())
         return EXIT_FAILURE;
-    if (smokeTest) {
+    if (previewMode)
+        runPreviewTour(&engine, previewDir);
+    else if (smokeTest) {
         auto *timer = new QTimer(&app);
         timer->setInterval(150);
         int page = 0;
@@ -175,6 +188,9 @@ void commandLine(char *argv[], QCoreApplication &app)
     QCommandLineParser parser;
     parser.addHelpOption();
     parser.addOption(QCommandLineOption(u"qml-smoke-test"_s, u"Load local GUI pages and exit without running operations."_s));
+    parser.addOption(QCommandLineOption(u"render-previews"_s,
+                                        u"Save screenshots of simulated states to a directory and exit; no operation is run."_s,
+                                        u"directory"_s));
 
     QCommandLineOption update(u"update"_s, u"Performs the configured system update command."_s);
     QCommandLineOption rollback(u"rollback"_s, u"Performs the configured system rollback command."_s);

@@ -19,6 +19,8 @@ struct Settings {
     bool showRebootReminder = true;
     bool preferFullscreen = false;
     bool preferConsole = false;
+    // Read-only bootc status read when the window opens (never a check or update).
+    bool readStatusOnStart = true;
 
     // allow settingsObj1 == settingsObj2 comparisons
     bool operator==(const Settings &) const = default;
@@ -63,6 +65,9 @@ public:
     // Whether the console panels should start in the opened state
     Q_PROPERTY(bool preferConsole READ preferConsole WRITE setPreferConsole NOTIFY preferConsoleChanged)
 
+    // Whether the dashboard reads deployment status (read-only) at startup
+    Q_PROPERTY(bool readStatusOnStart READ readStatusOnStart WRITE setReadStatusOnStart NOTIFY readStatusOnStartChanged)
+
     // Whether any settings differ from their default setting
     Q_PROPERTY(bool isDefault READ isDefault NOTIFY isDefaultChanged)
 
@@ -87,6 +92,13 @@ public:
 
     void setPreferConsole(bool prefer);
 
+    bool readStatusOnStart() const
+    {
+        return settings.readStatusOnStart;
+    }
+
+    void setReadStatusOnStart(bool read);
+
     bool isDefault() const
     {
         return settings == defaults;
@@ -99,6 +111,8 @@ public:
     Q_SIGNAL void preferFullscreenChanged();
 
     Q_SIGNAL void preferConsoleChanged();
+
+    Q_SIGNAL void readStatusOnStartChanged();
 
     Q_SIGNAL void isDefaultChanged();
 

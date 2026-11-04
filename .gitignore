@@ -1,14 +1,11 @@
 /app
 /build
-/build_bazzite
 /.cache
 /.flatpak-builder
 /.git_backup
 /.kdev4
 /.qtcreator
-bazzite_updater.kdev4
 /output
 .directory
-uupd-output.txt
 __cmake_systeminformation/
-/po/*/bazzite-updater.po~
+/po/*/fe-xico-updater.po~

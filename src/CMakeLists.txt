@@ -15,6 +15,8 @@ target_sources(fe-xico-updater
     utils.cpp
     native_operation.cpp
     native_operation.h
+    preview_tour.cpp
+    preview_tour.h
     auto_update_settings.cpp
     auto_update_settings.h
     resources.qrc
@@ -44,10 +46,15 @@ set(ABOUTAPP_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/pages/AboutDataApp.qml")
 set(ABOUTAPP_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/pages/AboutDataApp.qml")
 configure_file(${ABOUTAPP_INPUT} ${ABOUTAPP_OUTPUT} @ONLY)
 
+# FE-XicoOS design tokens, shared by every page.
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/components/FeXico.qml
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 ecm_target_qml_sources(fe-xico-updater
     SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/Main.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/SystemUpdate.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/pages/system_update/status.js
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rebase_helper/RebaseHelper.qml
     # ${CMAKE_CURRENT_SOURCE_DIR}/pages/rebase_helper/RebasePart.qml # remove until implemented
     ${CMAKE_CURRENT_SOURCE_DIR}/pages/rss_feed/RssPage.qml
@@ -59,9 +66,13 @@ ecm_target_qml_sources(fe-xico-updater
     ${CMAKE_CURRENT_SOURCE_DIR}/components/console/ConsoleView.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/console/ConsoleDrawer.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/AppDialog.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/FeXico.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/Panel.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/StatusPanel.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/FactRow.qml
+    ${CMAKE_CURRENT_SOURCE_DIR}/components/SectionLabel.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/customFormcards/FormCardCollapsible.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/customFormcards/FCOsRelease.qml
-    ${CMAKE_CURRENT_SOURCE_DIR}/components/customFormcards/FCSystemInfo.qml
     ${CMAKE_CURRENT_SOURCE_DIR}/components/customFormcards/FormDelegateSeparatorFixed.qml
     ${ABOUTAPP_OUTPUT}
 )

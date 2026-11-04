@@ -3,14 +3,15 @@
   <!--Created with jdAppStreamEdit 9.2-->
   <id>io.github.royoshi.fexicoupdater</id>
   <name>FE-Xico Updater</name>
-  <summary>Update FE-Xico and manage system deployments</summary>
+  <summary>Keep FE-XicoOS up to date and recover with rollback</summary>
   <developer id="io.github.royoshi">
     <name>RoYoshi</name>
   </developer>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-2.0-or-later</project_license>
   <description>
-    <p>Kirigami system updater for FE-Xico, powered by Universal Blue uupd with SDL3 controller support</p>
+    <p>FE-Xico Updater is the system-maintenance utility of FE-XicoOS. It shows whether your system is current, checks for and prepares FE-XicoOS image updates through the native bootc services, and explains restart and rollback in plain language. It never restarts the computer by itself.</p>
+    <p>It works with keyboard, mouse, touch and game controllers.</p>
   </description>
   <releases>
     <release version="0.1.0" date="2026-09-24" type="development">

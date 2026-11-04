@@ -8,9 +8,15 @@ permissions:
   contents: read
 jobs:
   native:
+    name: Native updater (Fedora ${{ matrix.fedora }})
     runs-on: ubuntu-24.04
-    container: fedora:44
-    timeout-minutes: 25
+    container: fedora:${{ matrix.fedora }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # FE-XicoOS builds the updater on Fedora 45; 44 stays covered as its fallback.
+        fedora: [44, 45]
     steps:
       - name: Bootstrap Git for recursive checkout
         run: dnf5 -y install git
@@ -20,19 +26,41 @@ jobs:
       - name: Install Fedora Qt/KDE build and runtime dependencies
         run: |
           dnf5 -y install cmake ninja-build gcc-c++ git python3 extra-cmake-modules pkgconf-pkg-config gettext mesa-libGLU-devel SDL3-devel qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtsvg-devel kf6-kirigami-devel kf6-kirigami-addons-devel kf6-kcoreaddons-devel kf6-kconfig-devel kf6-kcolorscheme-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-qqc2-desktop-style dbus-daemon
+      # Failures are also posted as annotations, which stay readable through
+      # the Checks API when raw job logs are not.
       - name: Configure and compile native application and tests
+        shell: bash
         run: |
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -D_USE_XDG_CONFIG=ON -D_INCLUDE_SUBMODULES=ON -DBUILD_TESTING=ON
-          cmake --build build --parallel 4
+          set -euo pipefail
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr -D_USE_XDG_CONFIG=ON -D_INCLUDE_SUBMODULES=ON -DBUILD_TESTING=ON 2>&1 | tee configure.log
+          if ! cmake --build build --parallel 4 2>&1 | tee build.log; then
+            grep -E "error:|Error " build.log | head -n 25 | while IFS= read -r line; do
+              printf '::error title=Build (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
+            done
+            exit 1
+          fi
       - name: Qt process and native result tests
-        run: ctest --test-dir build --output-on-failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! ctest --test-dir build --output-on-failure 2>&1 | tee ctest.log; then
+            grep -E "FAIL!|Loc: |Actual|Expected|AssertionError|Error|failed" ctest.log | head -n 40 | while IFS= read -r line; do
+              printf '::error title=Tests (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
+            done
+            exit 1
+          fi
       - name: Install and load every QML page offscreen
         shell: bash
         run: |
           set -euo pipefail
           cmake --install build
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
-          dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-smoke.log
+          if ! dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-smoke.log; then
+            grep -E "qrc:|file:|QML|ReferenceError|TypeError|Binding loop|error" qml-smoke.log | grep -v "not placed in the graphics scene" | head -n 30 | while IFS= read -r line; do
+              printf '::error title=QML smoke (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
+            done
+            exit 1
+          fi
       - name: Missing configuration and untrusted XDG directory
         shell: bash
         run: |
@@ -42,11 +70,47 @@ jobs:
           printf '[Commands]\nsystemUpdateCommand=/does-not-exist\n' > /tmp/untrusted/fe-xico-updater/config.ini
           export XDG_CONFIG_DIRS=/tmp/untrusted
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
-          dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-no-config.log
+          if ! dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-no-config.log; then
+            grep -E "qrc:|file:|QML|ReferenceError|TypeError|Binding loop|error" qml-no-config.log | grep -v "not placed in the graphics scene" | head -n 30 | while IFS= read -r line; do
+              printf '::error title=QML without config (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
+            done
+            exit 1
+          fi
+          mv /tmp/saved-system-config /usr/etc/xdg/fe-xico-updater
+      # Screenshots of simulated states for design review. Every image carries a
+      # "Simulated preview" footer; no update, check, rollback or restart runs.
+      - name: Render simulated-state previews
+        if: matrix.fedora == 45
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          dnf5 -y install --skip-unavailable google-noto-sans-fonts google-noto-sans-mono-fonts terminus-fonts source-foundry-hack-fonts breeze-icon-theme plasma-breeze plasma-breeze-common
+          export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          status=0
+          for variant in "dark::BreezeDark:" "dark-terminus::BreezeDark:Terminus" "light::BreezeLight:"; do
+            IFS=':' read -r name _ scheme font <<<"$variant"
+            mkdir -p "previews/$name"
+            if ! FE_XICO_PREVIEW_COLOR_SCHEME="$scheme" FE_XICO_PREVIEW_FONT="$font" \
+                dbus-run-session -- timeout 120 /usr/bin/fe-xico-updater --render-previews "previews/$name" 2>&1 | tee "previews/$name.log"; then
+              printf '::warning title=Previews (%s)::Preview rendering did not complete; see previews/%s.log\n' "$name" "$name"
+              status=1
+            fi
+          done
+          ls -R previews
+          exit $status
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.fedora == 45
+        with:
+          name: fe-xico-updater-previews
+          path: previews/
+          if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: native-updater-test-logs
+          name: native-updater-test-logs-fedora-${{ matrix.fedora }}
           path: |
             build/Testing/Temporary/LastTest.log
+            build.log
+            ctest.log
             qml-*.log
