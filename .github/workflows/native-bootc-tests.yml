@@ -98,10 +98,17 @@ jobs:
           for variant in "dark::BreezeDark:" "dark-terminus::BreezeDark:Terminus" "light::BreezeLight:"; do
             IFS=':' read -r name _ scheme font <<<"$variant"
             mkdir -p "previews/$name"
+            # timeout runs inside the D-Bus session so a stuck updater is itself killed
+            # (killing dbus-run-session would leave it holding tee's pipe open).
             if ! FE_XICO_PREVIEW_COLOR_SCHEME="$scheme" FE_XICO_PREVIEW_FONT="$font" \
-                dbus-run-session -- timeout 120 /usr/bin/fe-xico-updater --render-previews "previews/$name" 2>&1 | tee "previews/$name.log"; then
-              printf '::warning title=Previews (%s)::Preview rendering did not complete; see previews/%s.log\n' "$name" "$name"
+                dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews "previews/$name" 2>&1 | tee "previews/$name.log"; then
+              printf '::warning title=Previews (%s)::Preview rendering did not complete (%s of 15 images); last output follows\n' \
+                "$name" "$(find "previews/$name" -name '*.png' | wc -l)"
+              tail -n 8 "previews/$name.log" | while IFS= read -r line; do
+                line="${line//%/%25}"; printf '::warning title=Previews (%s) log::%s\n' "$name" "${line:0:400}"
+              done
               status=1
+              break
             fi
           done
           ls -R previews
