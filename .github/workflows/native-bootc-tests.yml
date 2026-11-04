@@ -85,14 +85,24 @@ jobs:
           mv /tmp/saved-system-config /usr/etc/xdg/fe-xico-updater
       # Screenshots of simulated states for design review. Every image carries a
       # "Simulated preview" footer; no update, check, rollback or restart runs.
-      - name: Render simulated-state previews
-        timeout-minutes: 10
+      # Kept apart from rendering so a slow package download names itself.
+      - name: Install preview fonts, icons and colour schemes
+        id: preview_deps
+        timeout-minutes: 8
         if: matrix.fedora == 45
+        continue-on-error: true
+        run: |
+          dnf5 -y install --setopt=install_weak_deps=False --skip-unavailable \
+            google-noto-sans-fonts google-noto-sans-mono-fonts terminus-fonts source-foundry-hack-fonts \
+            breeze-icon-theme plasma-breeze-common
+          ls /usr/share/color-schemes/ | sed 's/^/::notice title=Colour scheme::/' | head -n 4
+      - name: Render simulated-state previews
+        timeout-minutes: 8
+        if: matrix.fedora == 45 && steps.preview_deps.outcome == 'success'
         continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
-          dnf5 -y install --skip-unavailable google-noto-sans-fonts google-noto-sans-mono-fonts terminus-fonts source-foundry-hack-fonts breeze-icon-theme plasma-breeze plasma-breeze-common
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
           status=0
           for variant in "dark::BreezeDark:" "dark-terminus::BreezeDark:Terminus" "light::BreezeLight:"; do
