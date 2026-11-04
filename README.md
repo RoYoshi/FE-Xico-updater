@@ -1,53 +1,64 @@
 # FE-Xico Updater
 
-**FE-Xico Updater** is a Qt 6 / KDE Kirigami graphical frontend for system updates and deployment recovery on [FE-Xico](https://github.com/RoYoshi/FE-Xico). It supports keyboard, mouse, touchscreen, and controller interaction.
+**FE-Xico Updater** is the system-maintenance utility of [FE-XicoOS](https://github.com/RoYoshi/FE-Xico): a Qt 6 / KDE Kirigami application that shows whether the system is current, checks for and prepares FE-XicoOS image updates, and explains restart and rollback in plain language. It works with keyboard, mouse, touch and game controllers.
 
-This is a **work in progress**, adapted from [Bazzite Updater](https://github.com/rfrench3/bazzite_updater). The application is FE-Xico-branded, but it currently delegates updates and rollback to existing system utilities; it is not an independent replacement for those utilities.
+It began as a fork of [Bazzite Updater](https://github.com/rfrench3/bazzite_updater) by Robert French and contributors (see [Credits and licensing](#credits-and-licensing)). On FE-XicoOS it no longer uses uupd or Bazzite helpers: it talks only to FE-XicoOS's own bootc services.
 
 <img src="icons/hicolor/256x256/apps/io.github.royoshi.fexicoupdater.png" alt="FE-Xico Updater icon" width="128">
 
-## Automatic bootc updates (FE-XicoOS)
+## What it shows
 
-Under **Settings → Automatic OS Updates**, check **Enable automatic OS updates** to turn on the system timer. The checkbox reads the actual `bootc-fetch-apply-updates.timer` state, rather than storing a local preference. Enabling or disabling prompts for confirmation and then the administrator password via the image-provided FE-XicoOS Polkit helper; manual updates remain available when automatic updates are off.
+The dashboard derives one state from the backend's verified result and offers one main action for it:
 
-**Important:** The stock bootc automatic-update service can **reboot the machine without asking**, including during a game. The dialog warns before enabling it. Your tracked bootc image source does not change. The UI gracefully disables this setting on non-FE-XicoOS hosts without the helper.
+| State | Main action |
+| --- | --- |
+| Status not read yet / system status read | Check for Updates |
+| Checking, downloading and preparing, reading, queuing rollback | View Progress |
+| Update available | Update System |
+| Update ready, or rollback ready — restart to finish | Restart to Finish |
+| Download kept (locked download-only deployment) | Review Deployments |
+| Up to date | Check for Updates |
+| Operation not completed | Review Error |
 
+"Up to date" appears only after a check or update actually returned that result and no newer or pending deployment is shown. A failed or unverifiable operation never looks like success. Progress is indeterminate, because bootc does not report reliable percentages. The real command output is always available under **Technical Details** (F12 or the Y button).
 
-- Start the configured system-update service and display live command output.
-- Show command success or failure and offer reboot guidance.
-- Provide a rollback interface using the system's configured rollback helper.
-- Display operating-system and image information, when available.
-- Support controller navigation, fullscreen operation, and KDE color integration.
+By default the updater reads the deployment status (read-only) when it opens, so the dashboard can show the real state. Turn this off under **Settings → Updates**.
 
-## FE-Xico integration
+## How it works on FE-XicoOS
 
-The [FE-Xico image Containerfile](https://github.com/RoYoshi/FE-Xico/blob/main/Containerfile) builds this repository as a Git submodule and installs the resulting application into FE-Xico.
-
-The default commands in [`src/resources/config.ini`](src/resources/config.ini) are:
+The commands in [`src/resources/config.ini`](src/resources/config.ini), installed by FE-XicoOS as `/etc/fe-xico-updater/config.ini`, are:
 
 ```ini
 [Commands]
-systemUpdateCommand=./service-as-program.sh uupd-manual.service
-systemRollbackCommand=bazzite-rollback-helper rollback -y
+systemUpdateCommand=/usr/libexec/fe-xicoos-updater-helper fe-xicoos-upgrade.service
+systemRollbackCommand=/usr/libexec/fe-xicoos-updater-helper fe-xicoos-rollback.service
+systemCheckCommand=/usr/libexec/fe-xicoos-updater-helper fe-xicoos-check.service
+systemStatusCommand=/usr/libexec/fe-xicoos-updater-helper fe-xicoos-status.service
 ```
 
-The `service-as-program.sh` helper starts the named systemd service and streams its journal output. `uupd-manual.service` is the GUI's default update target; the separately scheduled `uupd.service` may share the underlying system updater. A healthy graphical frontend does not by itself establish that either service can successfully upgrade the installed image.
+Each command starts one fixed systemd service through Polkit, and the service runs bootc as root. The application itself never runs as root. Only a versioned result line (`FE_XICO_RESULT`, protocol 1) that matches the requested action and the reported deployment state counts as success. The updater:
 
-FE-Xico's default system update workflow therefore still depends on **Universal Blue's `uupd`**. Rollback still uses the inherited `bazzite-rollback-helper`. Both may be replaced later, but these dependencies should not be removed until a tested replacement is available.
+- never restarts the computer by itself (restart always needs your confirmation);
+- never switches the tracked image, selects driver editions or changes recovery pins;
+- runs one operation at a time;
+- refuses rollback while an update is waiting for a restart.
+
+## Automatic OS updates
+
+**Settings → Automatic OS Updates** shows and changes the real state of FE-XicoOS's `fe-xicoos-auto-update.timer` (not a local preference). Changes need confirmation and an administrator password. That timer checks and stages updates outside your active hours and never restarts the computer.
+
+**Important:** the stock bootc `bootc-fetch-apply-updates.timer` can **reboot the machine without asking**, including during a game. FE-XicoOS keeps it masked, and this updater does not enable it. On systems without the FE-XicoOS helper, the setting is disabled.
 
 ## Configuration
 
-The image installs the application configuration under `/etc/fe-xico-updater/` by default:
+FE-XicoOS installs the system configuration under `/etc/fe-xico-updater/`:
 
-- `config.ini` — update and rollback commands, and release-feed settings.
-- `KAboutData_OS.json` — operating-system information displayed in the UI.
-- `service-as-program.sh` — helper for running systemd service jobs.
+- `config.ini`: the commands above and the release-notes feed.
+- `KAboutData_OS.json`: operating-system information for the About page.
 
-User-interface preferences, including the reboot reminder, are stored separately in `~/.config/fe-xico-updaterrc`. Update commands are read from the system configuration, not from the user's home directory.
+Personal preferences (restart reminder, fullscreen, Technical Details open by default, reading status at startup) are stored in `~/.config/fe-xico-updaterrc`. Commands are only ever read from the root-owned system configuration, never from your home directory.
 
-Leave `systemRollbackCommand` empty to hide the rollback action. Do not point the update command at an untested service; update jobs may need elevated privileges and should not be interrupted mid-deployment.
-
-## Building
+## Building and testing
 
 Clone with Git submodules:
 
@@ -56,7 +67,7 @@ git clone --recurse-submodules https://github.com/RoYoshi/FE-Xico-Updater.git
 cd FE-Xico-Updater
 ```
 
-This project uses CMake, Qt 6, KDE Frameworks 6, Kirigami, SDL3, and the `controllable` submodule. The developer `justfile` provides local build, run, and translation tasks. For example:
+The project uses CMake, Qt 6, KDE Frameworks 6, Kirigami, SDL3 and the `controllable` submodule. The `justfile` provides local build, run and translation tasks:
 
 ```bash
 just update-submodules
@@ -64,18 +75,15 @@ just build
 just run
 ```
 
-Experimental Terra recipes are available through `just build-terra` and `just build-terra-44`; they have not been verified in this fork.
+The pull-request CI builds on Fedora 44 and 45, runs `ctest`, and loads every page offscreen (`fe-xico-updater --qml-smoke-test`). It also saves screenshots of simulated states (`fe-xico-updater --render-previews DIR`) as a build artifact. Each image is labelled "Simulated preview", and no operation is ever run. None of this exercises a real bootc update or rollback, so verify those on a disposable test deployment.
 
-The FE-Xico image build compiles and installs the application directly; see its Containerfile for the currently used build flags and dependencies.
-
-For release tooling, the RPM GitHub Actions workflow builds `fe-xico-updater.spec`. The inherited Flatpak workflow still needs a valid `.flatpak-manifest.json` before it can produce a Flatpak, and the Terra packaging recipes have not been verified in this fork.
+The FE-XicoOS image build compiles this repository's `main` branch; see its Containerfile for the flags it uses. The Terra recipes and the Flatpak workflow are inherited and have not been verified in this fork.
 
 ## Status and limitations
 
-- FE-Xico Updater currently uses `uupd` and Bazzite rollback integration.
-- Update success depends on the underlying OS deployment state. In particular, local `rpm-ostree` modifications can prevent `bootc`-managed upgrades.
-- Automated C++/QML tests are not yet enabled in CMake; verify update and rollback behavior on a test deployment.
-- Some release, driver, and image-information views still depend on Universal Blue/Bazzite metadata.
+- Update success depends on the deployment state; for example, local `rpm-ostree` modifications can prevent bootc-managed upgrades.
+- The release-notes page reads the FE-XicoOS releases feed; there is no in-app changelog per image.
+- Secure Boot and real-hardware update/rollback behaviour must be verified on a test deployment.
 
 ## FE-Xico branding
 

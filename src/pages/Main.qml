@@ -33,9 +33,45 @@ StatefulApp.StatefulWindow {
 
     readonly property string appIconName: "io.github.royoshi.fexicoupdater"
 
-    readonly property color feXicoGreen: "#00FF00"
-    readonly property color feXicoMagenta: "#FF00FF"
-    readonly property color feXicoSilver: "#C0C0C0"
+    // Read from the window's own theme, so child Theme overrides never feed back.
+    readonly property bool darkScheme: FeXico.isDark(Kirigami.Theme.backgroundColor)
+
+    // Used by pages for the restart-to-finish and review-deployments actions.
+    function openRestartDialog() {
+        if (AppState.allowCommands)
+            rebootDialog.open();
+    }
+
+    function showDeployments() {
+        deploymentsAction.trigger();
+    }
+
+    // One read-only status read at startup, so the dashboard can show the real
+    // state. Never a check, update or rollback; skipped in tests and previews.
+    Component.onCompleted: {
+        if (QmlSmokeTest || PreviewMode || !UserSettings.readStatusOnStart)
+            return;
+        if (!AppState.allowCommands || !(AppConfig.ini.Commands?.systemStatusCommand || ""))
+            return;
+        SystemUpdateBackend.refreshStatus(function(code) {
+            if (code !== 0)
+                root.showPassiveNotification(i18n("Could not read the system status. Open Technical Details on System Update for the output."), "long");
+        });
+    }
+
+    // Rendered screenshots of simulated states must say so.
+    footer: Loader {
+        active: PreviewMode
+        sourceComponent: QQC2.Label {
+            text: i18n("Simulated preview: example state for design review, not this computer's status.")
+            horizontalAlignment: Text.AlignHCenter
+            padding: Kirigami.Units.smallSpacing
+            background: Rectangle {
+                color: FeXico.secondary(Kirigami.Theme.backgroundColor)
+                opacity: 0.25
+            }
+        }
+    }
 
     title: i18nc("@title:window", "FE-Xico Updater")
     windowName: "FE-Xico Updater"
@@ -116,9 +152,9 @@ StatefulApp.StatefulWindow {
         title: i18n("FE-Xico Updater")
         titleIcon: root.appIconName
 
-        // Preserve KDE styling while giving selections the
-        // characteristic FE-Xico magenta accent.
-        Kirigami.Theme.highlightColor: root.feXicoMagenta
+        // Preserve KDE styling; the selected page gets FE-Xico's restrained
+        // magenta (a darker form on light colour schemes).
+        Kirigami.Theme.highlightColor: root.darkScheme ? FeXico.magenta : FeXico.magentaOnLight
 
         Behavior on width {
             NumberAnimation {
@@ -218,6 +254,7 @@ StatefulApp.StatefulWindow {
 
         actions: [
             Kirigami.Action {
+                id: systemUpdateAction
                 text: i18n("System Update")
                 icon.name: "system-software-update-symbolic"
 
@@ -231,6 +268,7 @@ StatefulApp.StatefulWindow {
             },
 
             Kirigami.Action {
+                id: deploymentsAction
                 text: i18n("Deployments & Recovery")
                 icon.name: "system-reboot-symbolic"
 
@@ -312,8 +350,8 @@ StatefulApp.StatefulWindow {
 
                 text: (
                     AppState.rebootRequired
-                        ? i18n("Restart to Apply Deployment")
-                        : i18n("Reboot System")
+                        ? i18n("Restart to Finish")
+                        : i18n("Restart System")
                 ) + GP.Labels.spacer + GP.Labels.north
 
                 icon.name:
@@ -440,26 +478,28 @@ StatefulApp.StatefulWindow {
         id: rebootDialog
 
         title: AppState.rebootRequired
-            ? i18nc("@title:window", "Apply FE-Xico Deployment")
-            : i18nc("@title:window", "Reboot System")
+            ? i18nc("@title:window", "Restart to Finish")
+            : i18nc("@title:window", "Restart System")
 
         standardButtons: Kirigami.Dialog.NoButton
 
         enabled: AppState.allowCommands
         activeDialogParent: root
 
-        subtitle: AppState.rebootRequired
-            ? i18n(
-                "Restart the system to boot into the newly staged FE-Xico deployment."
-            )
-            : i18n("This will reboot the system.")
+        subtitle: {
+            if (AppState.hostStatus.status?.rollbackQueued)
+                return i18n("Restart now to start the previous FE-XicoOS deployment. Save your work first.");
+            if (AppState.rebootRequired)
+                return i18n("Restart now to start your new FE-XicoOS deployment. Save your work first.");
+            return i18n("This restarts the computer. Save your work first.");
+        }
 
         customFooterActions: [
             Kirigami.Action {
                 id: confirmReboot
 
                 text:
-                    i18n("Reboot")
+                    i18n("Restart")
                     + GP.Labels.spacer
                     + GP.Labels.south
 
@@ -490,7 +530,7 @@ StatefulApp.StatefulWindow {
         onAccepted: {
             AppState.rebootSystem(function(code) {
                 if (code !== 0)
-                    root.showPassiveNotification(i18n("Reboot request failed. Use the desktop system menu when ready."));
+                    root.showPassiveNotification(i18n("The restart request failed. Use the desktop system menu when ready."));
             });
         }
 
@@ -527,8 +567,8 @@ StatefulApp.StatefulWindow {
             if (!AppState.commandRunning) {
                 return AppState.rebootRequired
                     ? i18n(
-                        "A deployment change is pending. "
-                        + "Restart the system to apply it."
+                        "A deployment is waiting for a restart. "
+                        + "Restart the system to start using it."
                     )
                     : i18n(
                         "No update operation is running. "

@@ -13,6 +13,7 @@ UserSettings::UserSettings()
     settings.showRebootReminder = m_group.readEntry("showRebootReminder", defaults.showRebootReminder);
     settings.preferFullscreen = m_group.readEntry("preferFullscreen", defaults.preferFullscreen);
     settings.preferConsole = m_group.readEntry("preferConsole", defaults.preferConsole);
+    settings.readStatusOnStart = m_group.readEntry("readStatusOnStart", defaults.readStatusOnStart);
 }
 
 void UserSettings::setShowRebootReminder(bool show)
@@ -54,9 +55,23 @@ void UserSettings::setPreferConsole(bool prefer)
     Q_EMIT isDefaultChanged();
 }
 
+void UserSettings::setReadStatusOnStart(bool read)
+{
+    if (settings.readStatusOnStart == read)
+        return;
+
+    settings.readStatusOnStart = read;
+    m_group.writeEntry("readStatusOnStart", read);
+    m_group.sync();
+
+    Q_EMIT readStatusOnStartChanged();
+    Q_EMIT isDefaultChanged();
+}
+
 void UserSettings::restoreDefaults()
 {
     setShowRebootReminder(defaults.showRebootReminder);
     setPreferFullscreen(defaults.preferFullscreen);
     setPreferConsole(defaults.preferConsole);
+    setReadStatusOnStart(defaults.readStatusOnStart);
 }

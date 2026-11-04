@@ -21,3 +21,7 @@ add_test(NAME auto-update-checkbox-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_
 add_test(NAME background-notifications-source COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_background_notifications.py)
 
 add_test(NAME app-icon COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_app_icon.py)
+
+# FE-XicoOS identity and attribution; refined-UI source contracts.
+add_test(NAME identity COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_identity.py)
+add_test(NAME refine-contracts COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test_refine_contracts.py)

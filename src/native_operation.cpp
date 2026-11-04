@@ -141,11 +141,13 @@ void runNativeOperation(Console::Model *console, const QString &command, const Q
         const bool success = code == 0 && *resultCount == 1 && validNativeResult(*result, action);
         if (success) {
             appState.setResult(resultText(*result), result->value(u"status"_s).toObject());
+            appState.recordOutcome(action, true, result->value(u"outcome"_s).toString());
         } else {
             const auto message = code == 0
                 ? i18n("The command returned no valid, verified deployment result. Refresh status before taking further action.")
                 : i18n("The operation failed or monitoring was interrupted. Deployment state is unverified; inspect the console and refresh status.");
             appState.setResult(message);
+            appState.recordOutcome(action, false);
             console->newLine(message, Console::LogLevel::Error);
         }
         appState.setCommandSucceeded(success);

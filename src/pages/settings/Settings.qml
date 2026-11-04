@@ -14,9 +14,6 @@ import io.github.rfrench3.controllable as GP
 FC.FormCardPage {
     id: page
 
-    readonly property color feXicoGreen: "#00FF00"
-    readonly property color feXicoMagenta: "#FF00FF"
-    readonly property color feXicoSilver: "#C0C0C0"
     readonly property var hourLabels: [
         "00:00", "01:00", "02:00", "03:00", "04:00", "05:00",
         "06:00", "07:00", "08:00", "09:00", "10:00", "11:00",
@@ -24,7 +21,7 @@ FC.FormCardPage {
         "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
     ]
 
-    Kirigami.Theme.highlightColor: feXicoMagenta
+    Kirigami.Theme.highlightColor: applicationWindow().darkScheme ? FeXico.magenta : FeXico.magentaOnLight
 
     title:
         GP.Labels.east
@@ -51,23 +48,29 @@ FC.FormCardPage {
     }
 
     // ─────────────────────────────────────────────────────────
-    // FE-Xico Updater preferences
+    // Update preferences
     // ─────────────────────────────────────────────────────────
 
     FC.FormHeader {
-        title: i18n("FE-Xico Updater")
+        title: i18n("Updates")
     }
 
     FC.FormCard {
-        FC.FormTextDelegate {
-            text: i18n("Updater Preferences")
+        FC.FormSwitchDelegate {
+            text: i18n("Read system status when the updater opens")
 
             description: i18n(
-                "Configure how FE-Xico Updater behaves when checking, "
-                + "applying, and finishing system updates."
+                "Reads your deployments with bootc at startup so the dashboard "
+                + "can show the real state. Read-only: nothing is downloaded or "
+                + "changed, and no update check or update is started."
             )
 
-            icon.name: "io.github.royoshi.fexicoupdater"
+            checked: UserSettings.readStatusOnStart
+
+            onToggled: {
+                UserSettings.readStatusOnStart = checked;
+                checked = Qt.binding(() => UserSettings.readStatusOnStart);
+            }
         }
     }
 
@@ -177,20 +180,20 @@ FC.FormCardPage {
     }
 
     // ─────────────────────────────────────────────────────────
-    // Interface
+    // Notifications
     // ─────────────────────────────────────────────────────────
 
     FC.FormHeader {
-        title: i18n("Interface")
+        title: i18n("Notifications")
     }
 
     FC.FormCard {
         FC.FormSwitchDelegate {
-            text: i18n("Reboot reminder")
+            text: i18n("Restart reminder")
 
             description: i18n(
-                "Show a reminder when exiting FE-Xico Updater after "
-                + "an update or rollback completes and a reboot is required."
+                "Remind you when closing FE-Xico Updater while an update "
+                + "or rollback is waiting for a restart."
             )
 
             checked: UserSettings.showRebootReminder
@@ -207,11 +210,31 @@ FC.FormCardPage {
 
         FormDelegateSeparatorFixed {}
 
+        FC.FormTextDelegate {
+            text: i18n("Desktop notifications")
+            description: i18n(
+                "When an update check finishes while FE-Xico Updater is not the "
+                + "active window, the result is shown as a desktop notification."
+            )
+            icon.name: "preferences-desktop-notification-symbolic"
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // Appearance
+    // ─────────────────────────────────────────────────────────
+
+    FC.FormHeader {
+        title: i18n("Appearance")
+    }
+
+    FC.FormCard {
         FC.FormSwitchDelegate {
             text: i18n("Launch in fullscreen")
 
             description: i18n(
-                "Open FE-Xico Updater in fullscreen mode by default."
+                "Open FE-Xico Updater in fullscreen by default. Press F11 to "
+                + "switch at any time."
             )
 
             checked: UserSettings.preferFullscreen
@@ -225,13 +248,43 @@ FC.FormCardPage {
             }
         }
 
-        FormDelegateSeparatorFixed {}
+    }
 
+    // ─────────────────────────────────────────────────────────
+    // Controller and navigation (information only: hints adapt by themselves)
+    // ─────────────────────────────────────────────────────────
+
+    FC.FormHeader {
+        title: i18n("Controller & Navigation")
+    }
+
+    FC.FormCard {
+        FC.FormTextDelegate {
+            text: i18n("Controller button hints appear automatically")
+            description: i18n(
+                "A runs the main action, B or Start opens the menu, Y shows "
+                + "Technical Details, and X quits from the menu. The keyboard works "
+                + "too: Enter, Escape, F12 and the arrow keys."
+            )
+            icon.name: "input-gamepad-symbolic"
+            textItem.wrapMode: Text.Wrap
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // Advanced
+    // ─────────────────────────────────────────────────────────
+
+    FC.FormHeader {
+        title: i18n("Advanced")
+    }
+
+    FC.FormCard {
         FC.FormSwitchDelegate {
-            text: i18n("Open console by default")
+            text: i18n("Open Technical Details by default")
 
             description: i18n(
-                "Automatically open update console panels when "
+                "Show the real command output panel when "
                 + "FE-Xico Updater starts."
             )
 
@@ -262,7 +315,7 @@ FC.FormCardPage {
     }
 
     // ─────────────────────────────────────────────────────────
-    // System integration
+    // System integration (read-only, provided by FE-XicoOS)
     // ─────────────────────────────────────────────────────────
 
     FC.FormHeader {
@@ -274,7 +327,7 @@ FC.FormCardPage {
             text: i18n("Read-only configuration")
 
             description: i18n(
-                "These values are provided by FE-Xico and cannot "
+                "These values are provided by FE-XicoOS and cannot "
                 + "be changed from the updater."
             )
 
@@ -329,7 +382,7 @@ FC.FormCardPage {
                 || i18n("Not configured")
 
             description:
-                i18n("FE-Xico Release Notes Feed")
+                i18n("FE-XicoOS Release Notes Feed")
         }
     }
 

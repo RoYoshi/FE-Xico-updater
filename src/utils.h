@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QColor>
+#include <QDateTime>
 #include <QJsonObject>
 #include <QFileInfo>
 #include <QJSValue>
@@ -92,6 +93,13 @@ private:
     Q_PROPERTY(QString resultMessage READ resultMessage NOTIFY resultChanged)
     Q_PROPERTY(QString operation READ operation NOTIFY resultChanged)
     Q_PROPERTY(QJsonObject hostStatus READ hostStatus NOTIFY resultChanged)
+    // Last verified native outcome ("status", "up-to-date", "staged", ...),
+    // "failed" when the last operation could not be verified, "" before any.
+    Q_PROPERTY(QString outcome READ outcome NOTIFY resultChanged)
+    // Outcome and local time of the last successful check or upgrade in this
+    // session. Invalid/empty until one completes; never inferred.
+    Q_PROPERTY(QString lastCheckOutcome READ lastCheckOutcome NOTIFY resultChanged)
+    Q_PROPERTY(QDateTime lastCheckedAt READ lastCheckedAt NOTIFY resultChanged)
     Q_PROPERTY(bool allowCommands READ allowCommands NOTIFY allowCommandsChanged)
 
     Q_PROPERTY(QString commandError READ commandError NOTIFY commandErrorChanged)
@@ -141,6 +149,14 @@ public:
     QString resultMessage() const { return m_resultMessage; }
     QString operation() const { return m_operation; }
     QJsonObject hostStatus() const { return m_hostStatus; }
+    QString outcome() const { return m_outcome; }
+    QString lastCheckOutcome() const { return m_lastCheckOutcome; }
+    QDateTime lastCheckedAt() const { return m_lastCheckedAt; }
+    // Record a finished native operation. Only verified successes update
+    // the check time; failures mark the dashboard state as unverified.
+    void recordOutcome(const QString &action, bool success, const QString &outcome = {});
+    // Forget recorded outcomes (test isolation only; not exposed to QML).
+    void clearOutcome();
     void setOperation(const QString &action) { m_operation = action; Q_EMIT resultChanged(); }
     void setResult(const QString &message, const QJsonObject &host = {});
     Q_SIGNAL void resultChanged();
@@ -172,6 +188,9 @@ private:
     QString m_resultMessage;
     QString m_operation;
     QJsonObject m_hostStatus;
+    QString m_outcome;
+    QString m_lastCheckOutcome;
+    QDateTime m_lastCheckedAt;
     bool m_updateRunning = false;
     bool m_rollbackRunning = false;
     bool m_rebaseRunning = false;

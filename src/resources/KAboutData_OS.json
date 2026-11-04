@@ -1,166 +1,34 @@
 {
-    "displayName": "FE-Xico",
-    "shortDescription": "FE-XicoOS, a Fedora-native bootc gaming distribution",
-    "homepage": "https://github.com/RoYoshi/FE-Xico",
-    "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
-    "version": "@VERSION@",
-    "otherText": "FE-XicoOS is an independent Fedora-based bootc distribution. FE-Xico Updater retains attribution to its Bazzite Updater origins and uses native FE-XicoOS services.",
-    "authors": [
-        {
-            "name": "RoYoshi",
-            "task": "FE-Xico creator and integration maintainer",
-            "emailAddress": "",
-            "webAddress": "https://github.com/RoYoshi"
-        }
-    ],
-    "credits": [
-        {
-            "name": "Kyle Gospodnetich",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://kylegospodneti.ch/"
-        },
-        {
-            "name": "EyeCantCU",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/EyeCantCU"
-        },
-        {
-            "name": "HikariKnight",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/HikariKnight"
-        },
-        {
-            "name": "aarron-lee",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/aarron-lee"
-        },
-        {
-            "name": "castrojo",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/castrojo"
-        },
-        {
-            "name": "bsherman",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/bsherman"
-        },
-        {
-            "name": "noelmiller",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/noelmiller"
-        },
-        {
-            "name": "nicknamenamenick",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/nicknamenamenick"
-        },
-        {
-            "name": "Zeglius",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/Zeglius"
-        },
-        {
-            "name": "BoukeHaarsma23",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/BoukeHaarsma23"
-        },
-        {
-            "name": "matte-schwartz",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/matte-schwartz"
-        },
-        {
-            "name": "gerblesh",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/gerblesh"
-        },
-        {
-            "name": "abanna",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/abanna"
-        },
-        {
-            "name": "ameliasvg",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/ameliasvg"
-        },
-        {
-            "name": "SuperRiderTH",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/SuperRiderTH"
-        },
-        {
-            "name": "CharlieBros",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/CharlieBros"
-        },
-        {
-            "name": "xXJSONDeruloXx",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/xXJSONDeruloXx"
-        },
-        {
-            "name": "m2Giles",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/m2Giles"
-        },
-        {
-            "name": "fiftydinar",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/fiftydinar"
-        },
-        {
-            "name": "EPOCHvoyager",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/EPOCHvoyager"
-        },
-        {
-            "name": "RodoMa92",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/RodoMa92"
-        },
-        {
-            "name": "renner0e",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/renner0e"
-        },
-        {
-            "name": "And many more!",
-            "task": "Upstream Bazzite contributor",
-            "emailAddress": "",
-            "webAddress": "https://github.com/ublue-os/bazzite/graphs/contributors"
-        }
-    ],
-    "translators": [],
-    "licenses": [
-        {
-            "name": "Apache License Version 2.0",
-            "text": "@Apache-2.0@",
-            "spdx": "Apache-2.0"
-        }
-    ],
-    "copyrightStatement": "© 2023-@CURRENT_YEAR@",
-    "programLogo": "/usr/share/icons/hicolor/scalable/apps/FE-XicoHat.svg"
+  "displayName": "FE-XicoOS",
+  "shortDescription": "Fedora-native atomic KDE desktop and gaming distribution",
+  "homepage": "https://github.com/RoYoshi/FE-Xico",
+  "bugAddress": "https://github.com/RoYoshi/FE-Xico/issues",
+  "version": "@VERSION@",
+  "otherText": "FE-XicoOS: Fedora-based bootc desktop. Updates are staged from the configured image registry by bootc. Reboot only after confirming the selected deployment.",
+  "authors": [
+    {
+      "name": "RoYoshi",
+      "task": "FE-XicoOS project creator",
+      "webAddress": "https://github.com/RoYoshi"
+    }
+  ],
+  "credits": [
+    {
+      "name": "Fedora Project",
+      "task": "Fedora bootc base image and packages",
+      "webAddress": "https://fedoraproject.org"
+    },
+    {
+      "name": "KDE community",
+      "task": "KDE Plasma desktop",
+      "webAddress": "https://kde.org"
+    }
+  ],
+  "licenses": [
+    {
+      "name": "GPL-2.0-or-later",
+      "spdx": "GPL-2.0-or-later"
+    }
+  ],
+  "programLogo": "/usr/share/icons/hicolor/512x512/apps/FE-XicoHat.png"
 }

@@ -147,6 +147,24 @@ void AppState::setResult(const QString &message, const QJsonObject &host)
     Q_EMIT resultChanged();
 }
 
+void AppState::recordOutcome(const QString &action, bool success, const QString &outcome)
+{
+    m_outcome = success ? outcome : u"failed"_s;
+    if (success && (action == u"check"_s || action == u"upgrade"_s)) {
+        m_lastCheckOutcome = outcome;
+        m_lastCheckedAt = QDateTime::currentDateTime();
+    }
+    Q_EMIT resultChanged();
+}
+
+void AppState::clearOutcome()
+{
+    m_outcome.clear();
+    m_lastCheckOutcome.clear();
+    m_lastCheckedAt = QDateTime();
+    Q_EMIT resultChanged();
+}
+
 void AppState::rebootSystem(QJSValue callback)
 {
     if (!allowCommands()) {
