@@ -9,3 +9,4 @@
 .directory
 __cmake_systeminformation/
 /po/*/fe-xico-updater.po~
+__pycache__/
