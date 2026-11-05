@@ -112,7 +112,7 @@ jobs:
             # (killing dbus-run-session would leave it holding tee's pipe open).
             if ! FE_XICO_PREVIEW_COLOR_SCHEME="$scheme" FE_XICO_PREVIEW_FONT="$font" \
                 dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews "previews/$name" 2>&1 | tee "previews/$name.log"; then
-              printf '::warning title=Previews (%s)::Preview rendering did not complete (%s of 15 images); last output follows\n' \
+              printf '::warning title=Previews (%s)::Preview rendering did not complete (%s of 17 images); last output follows\n' \
                 "$name" "$(find "previews/$name" -name '*.png' | wc -l)"
               tail -n 8 "previews/$name.log" | while IFS= read -r line; do
                 line="${line//%/%25}"; printf '::warning title=Previews (%s) log::%s\n' "$name" "${line:0:400}"
@@ -122,6 +122,14 @@ jobs:
             fi
           done
           ls -R previews
+          # The progress previews also go into the job log (base64 between markers),
+          # so they can be reviewed where artifacts are not reachable.
+          for image in previews/dark/16-dashboard-downloading.png previews/dark/17-dashboard-deploying.png; do
+            [ -s "$image" ] || continue
+            printf '@@FXIMG %s@@\n' "$(basename "$image" .png)"
+            base64 -w 4000 "$image"
+            printf '@@FXEND@@\n'
+          done
           exit $status
       - uses: actions/upload-artifact@v4
         if: always() && matrix.fedora == 45
