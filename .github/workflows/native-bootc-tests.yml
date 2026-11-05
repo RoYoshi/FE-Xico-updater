@@ -124,7 +124,7 @@ jobs:
           ls -R previews
           # The progress previews also go into the job log (base64 between markers),
           # so they can be reviewed where artifacts are not reachable.
-          for image in previews/dark/16-dashboard-downloading.png previews/dark/17-dashboard-deploying.png; do
+          for image in previews/dark/06-dashboard-updating.png previews/dark/16-dashboard-downloading.png previews/dark/17-dashboard-deploying.png previews/light/16-dashboard-downloading.png; do
             [ -s "$image" ] || continue
             printf '@@FXIMG %s@@\n' "$(basename "$image" .png)"
             base64 -w 4000 "$image"
