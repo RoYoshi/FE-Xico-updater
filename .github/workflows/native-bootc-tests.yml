@@ -60,6 +60,10 @@ jobs:
           set -euo pipefail
           cmake --install build
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          # Plasma's widget style, as in a Plasma session. Without it Qt falls back to
+          # Fusion, which gives qqc2-desktop-style's progress bar a height of zero.
+          if [ -e /usr/lib64/qt6/plugins/styles/breeze6.so ]; then export QT_STYLE_OVERRIDE=Breeze; fi
+          echo "::notice title=Preview widget style::${QT_STYLE_OVERRIDE:-Qt default (Fusion)}"
           if ! dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-smoke.log; then
             grep -E "qrc:|file:|QML|ReferenceError|TypeError|Binding loop|error" qml-smoke.log | grep -v "not placed in the graphics scene" | head -n 30 | while IFS= read -r line; do
               printf '::error title=QML smoke (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
@@ -76,6 +80,10 @@ jobs:
           printf '[Commands]\nsystemUpdateCommand=/does-not-exist\n' > /tmp/untrusted/fe-xico-updater/config.ini
           export XDG_CONFIG_DIRS=/tmp/untrusted
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          # Plasma's widget style, as in a Plasma session. Without it Qt falls back to
+          # Fusion, which gives qqc2-desktop-style's progress bar a height of zero.
+          if [ -e /usr/lib64/qt6/plugins/styles/breeze6.so ]; then export QT_STYLE_OVERRIDE=Breeze; fi
+          echo "::notice title=Preview widget style::${QT_STYLE_OVERRIDE:-Qt default (Fusion)}"
           if ! dbus-run-session -- timeout 30 /usr/bin/fe-xico-updater --qml-smoke-test 2>&1 | tee qml-no-config.log; then
             grep -E "qrc:|file:|QML|ReferenceError|TypeError|Binding loop|error" qml-no-config.log | grep -v "not placed in the graphics scene" | head -n 30 | while IFS= read -r line; do
               printf '::error title=QML without config (Fedora %s)::%s\n' "${{ matrix.fedora }}" "${line//%/%25}"
@@ -94,7 +102,7 @@ jobs:
         run: |
           dnf5 -y install --setopt=install_weak_deps=False --skip-unavailable \
             google-noto-sans-fonts google-noto-sans-mono-fonts terminus-fonts source-foundry-hack-fonts \
-            breeze-icon-theme plasma-breeze-common
+            breeze-icon-theme plasma-breeze-common plasma-breeze
           ls /usr/share/color-schemes/ | sed 's/^/::notice title=Colour scheme::/' | head -n 4
       - name: Render simulated-state previews
         timeout-minutes: 8
@@ -104,6 +112,10 @@ jobs:
         run: |
           set -euo pipefail
           export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          # Plasma's widget style, as in a Plasma session. Without it Qt falls back to
+          # Fusion, which gives qqc2-desktop-style's progress bar a height of zero.
+          if [ -e /usr/lib64/qt6/plugins/styles/breeze6.so ]; then export QT_STYLE_OVERRIDE=Breeze; fi
+          echo "::notice title=Preview widget style::${QT_STYLE_OVERRIDE:-Qt default (Fusion)}"
           status=0
           for variant in "dark::BreezeDark:" "dark-terminus::BreezeDark:Terminus" "light::BreezeLight:"; do
             IFS=':' read -r name _ scheme font <<<"$variant"
@@ -131,35 +143,6 @@ jobs:
             printf '@@FXEND@@\n'
           done
           exit $status
-      # Experiment: the progress bar does not appear in the offscreen previews
-      # (also the indeterminate one). Render the progress scenarios again with the
-      # Breeze widget style installed, offscreen and on a virtual X server, to see
-      # which part of the preview environment is missing. Review aid only.
-      - name: Progress bar rendering experiment
-        timeout-minutes: 10
-        if: matrix.fedora == 45 && steps.preview_deps.outcome == 'success'
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -uo pipefail
-          dnf5 -y install --setopt=install_weak_deps=False --skip-unavailable plasma-breeze xorg-x11-server-Xvfb >/dev/null
-          rpm -q plasma-breeze xorg-x11-server-Xvfb | sed 's/^/::notice title=Experiment packages::/'
-          export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
-          export FE_XICO_PREVIEW_COLOR_SCHEME=BreezeDark
-          mkdir -p exp/offscreen-breeze exp/xvfb
-          QT_QPA_PLATFORM=offscreen dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews exp/offscreen-breeze >exp/offscreen.log 2>&1
-          Xvfb :91 -screen 0 1920x1200x24 >/dev/null 2>&1 & xpid=$!
-          sleep 2
-          DISPLAY=:91 QT_QPA_PLATFORM=xcb dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews exp/xvfb >exp/xvfb.log 2>&1
-          kill "$xpid" 2>/dev/null
-          for image in exp/offscreen-breeze/06-dashboard-updating.png exp/offscreen-breeze/16-dashboard-downloading.png \
-                       exp/xvfb/06-dashboard-updating.png exp/xvfb/16-dashboard-downloading.png; do
-            [ -s "$image" ] || { echo "::warning title=Experiment::missing $image"; continue; }
-            printf '@@FXIMG %s@@\n' "$(echo "$image" | tr '/' '-')"
-            base64 -w 4000 "$image"
-            printf '@@FXEND@@\n'
-          done
-          grep -iE "style|progress|warning" exp/*.log | head -n 20 | sed 's/^/::notice title=Experiment log::/'
       - uses: actions/upload-artifact@v4
         if: always() && matrix.fedora == 45
         with:
