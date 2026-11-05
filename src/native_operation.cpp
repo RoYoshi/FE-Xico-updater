@@ -8,7 +8,10 @@
 #include <QGuiApplication>
 #include <QVariantMap>
 #include <QJsonDocument>
+#include <QJsonArray>
+#include <QLocale>
 #include <QRegularExpression>
+#include <cmath>
 #include <memory>
 
 bool validNativeResult(const QJsonObject &r, const QString &action)
@@ -54,6 +57,111 @@ bool validNativeResult(const QJsonObject &r, const QString &action)
     if (outcome == u"up-to-date"_s || outcome == u"update-available"_s)
         return !staged.isObject() && !queued.toBool();
     return true;
+}
+
+// An unsigned integer as bootc writes it (JSON numbers arrive as doubles).
+static bool progressCount(const QJsonValue &value, double *out)
+{
+    if (!value.isDouble())
+        return false;
+    const double number = value.toDouble();
+    if (!(number >= 0) || number > 9007199254740992.0 || std::floor(number) != number)
+        return false;
+    *out = number;
+    return true;
+}
+
+static QString stagingStepText(const QString &subtask, const QString &bootcDescription)
+{
+    if (subtask == u"merging"_s)
+        return i18n("Merging the new image");
+    if (subtask == u"bound_images"_s)
+        return i18n("Pulling bound images");
+    if (subtask == u"deploying"_s)
+        return i18n("Writing the new deployment");
+    if (subtask == u"cleanup"_s)
+        return i18n("Removing old images");
+    return bootcDescription; // a step this updater does not know: bootc's own words
+}
+
+QVariantMap describeNativeProgress(const QJsonObject &record, const QString &action)
+{
+    static const QStringList states = {u"waiting"_s, u"reporting"_s, u"unsupported"_s, u"incompatible"_s};
+    const auto state = record.value(u"state"_s).toString();
+    double seq = 0;
+    if (record.value(u"protocol"_s) != QJsonValue(1) || record.value(u"action"_s).toString() != action
+        || !progressCount(record.value(u"seq"_s), &seq) || seq < 1 || !states.contains(state))
+        return {};
+    QVariantMap out{{u"seq"_s, seq}, {u"state"_s, state}, {u"known"_s, false}, {u"value"_s, 0.0}, {u"total"_s, 0.0},
+                    {u"headline"_s, QString()}, {u"detail"_s, QString()}, {u"task"_s, QString()}};
+    if (state == u"waiting"_s) {
+        out[u"headline"_s] = i18n("Starting the update");
+        out[u"detail"_s] = i18n("Waiting for bootc to report progress.");
+        return out;
+    }
+    if (state == u"unsupported"_s) {
+        out[u"detail"_s] = i18n("This system's bootc does not report progress. The update is running, and the result appears when it finishes.");
+        return out;
+    }
+    if (state == u"incompatible"_s) {
+        out[u"detail"_s] = i18n("bootc reports progress in a format this updater does not know. The update is running, and the result appears when it finishes.");
+        return out;
+    }
+
+    const auto event = record.value(u"event"_s).toObject();
+    const auto type = event.value(u"type"_s).toString();
+    double steps = 0, stepsTotal = 0, bytes = 0, bytesTotal = 0;
+    if ((type != u"ProgressBytes"_s && type != u"ProgressSteps"_s) || !event.value(u"task"_s).isString()
+        || !event.value(u"description"_s).isString() || !event.value(u"subtasks"_s).isArray()
+        || !progressCount(event.value(u"steps"_s), &steps) || !progressCount(event.value(u"stepsTotal"_s), &stepsTotal)
+        || (type == u"ProgressBytes"_s
+            && (!progressCount(event.value(u"bytes"_s), &bytes) || !progressCount(event.value(u"bytesTotal"_s), &bytesTotal))))
+        return {};
+    const auto task = event.value(u"task"_s).toString();
+    const auto description = event.value(u"description"_s).toString();
+    out[u"task"_s] = task;
+    if (task == u"pulling"_s)
+        out[u"headline"_s] = i18n("Downloading the update");
+    else if (task == u"importing"_s)
+        out[u"headline"_s] = i18n("Importing the update");
+    else if (task == u"staging"_s)
+        out[u"headline"_s] = i18n("Deploying the update");
+    else
+        out[u"headline"_s] = description; // a stage this updater does not know: bootc's own words
+
+    QStringList detail;
+    if (type == u"ProgressBytes"_s) {
+        const QLocale locale;
+        if (bytesTotal > 0 && bytes <= bytesTotal) {
+            out[u"known"_s] = true;
+            out[u"value"_s] = bytes;
+            out[u"total"_s] = bytesTotal;
+            detail << i18nc("downloaded of total, e.g. 412 MB of 1.2 GB", "%1 of %2",
+                            locale.formattedDataSize(qint64(bytes)), locale.formattedDataSize(qint64(bytesTotal)));
+        } else if (bytes > 0) {
+            detail << i18n("%1 downloaded", locale.formattedDataSize(qint64(bytes)));
+        }
+        if (stepsTotal > 0 && steps <= stepsTotal)
+            detail << i18nc("container image layers fetched of layers to fetch", "layer %1 of %2", qint64(steps), qint64(stepsTotal));
+    } else {
+        // A single step (importing) has no intermediate position to show.
+        if (stepsTotal >= 2 && steps <= stepsTotal) {
+            out[u"known"_s] = true;
+            out[u"value"_s] = steps;
+            out[u"total"_s] = stepsTotal;
+            detail << i18n("step %1 of %2", qint64(steps), qint64(stepsTotal));
+        }
+        const auto subtasks = event.value(u"subtasks"_s).toArray();
+        for (qsizetype i = subtasks.size() - 1; i >= 0; --i) {
+            const auto sub = subtasks.at(i).toObject();
+            if (sub.value(u"completed"_s) == QJsonValue(false)) {
+                detail << stagingStepText(sub.value(u"subtask"_s).toString(), sub.value(u"description"_s).toString());
+                break;
+            }
+        }
+    }
+    out[u"detail"_s] = detail.join(u" · "_s);
+    return out;
 }
 
 static QString resultText(const QJsonObject &result)
@@ -131,6 +239,7 @@ void runNativeOperation(Console::Model *console, const QString &command, const Q
     auto result = std::make_shared<QJsonObject>();
     auto resultCount = std::make_shared<int>(0);
     appState.setCommandSucceeded(false);
+    appState.clearProgress();
     appState.setOperation(action);
     appState.setResult(i18n("Working… Authentication may be required. See the console for progress."), appState.hostStatus());
     if (action == u"rollback"_s)
@@ -139,6 +248,8 @@ void runNativeOperation(Console::Model *console, const QString &command, const Q
         appState.setUpdateRunning(true);
     auto onFinish = [console, result, resultCount, action, callback](int code) {
         const bool success = code == 0 && *resultCount == 1 && validNativeResult(*result, action);
+        // Progress ends with the operation; the verified result replaces it.
+        appState.clearProgress();
         if (success) {
             appState.setResult(resultText(*result), result->value(u"status"_s).toObject());
             appState.recordOutcome(action, true, result->value(u"outcome"_s).toString());
@@ -161,8 +272,17 @@ void runNativeOperation(Console::Model *console, const QString &command, const Q
         if (callback.isCallable())
             callback.call({success ? 0 : 1});
     };
-    auto line = [console, result, resultCount](QString text, Console::LogLevel level) {
+    auto line = [console, result, resultCount, action](QString text, Console::LogLevel level) {
         const QString prefix = u"FE_XICO_RESULT "_s;
+        const QString progressPrefix = u"FE_XICO_PROGRESS "_s;
+        if (level == Console::LogLevel::Info && text.startsWith(progressPrefix)) {
+            // Display only. A record that does not validate is dropped silently.
+            const auto progress = describeNativeProgress(
+                QJsonDocument::fromJson(text.mid(progressPrefix.size()).toUtf8()).object(), action);
+            if (!progress.isEmpty() && appState.commandRunning())
+                appState.setProgress(progress);
+            return;
+        }
         if (level == Console::LogLevel::Info && text.startsWith(prefix)) {
             ++*resultCount;
             *result = QJsonDocument::fromJson(text.mid(prefix.size()).toUtf8()).object();

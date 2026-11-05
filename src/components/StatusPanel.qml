@@ -10,8 +10,9 @@ import org.kde.kirigami as Kirigami
 import io.github.royoshi.fexicoupdater
 
 // The dashboard's primary status: what is true right now, and the one thing to
-// do next. Progress is shown as indeterminate, because the native backend does
-// not report trustworthy percentages.
+// do next. While an update runs, the bar is indeterminate unless bootc itself
+// reported a position and a total (AppState.progress, built in C++ by
+// describeNativeProgress). The bar never decides or announces an outcome.
 Panel {
     id: root
 
@@ -22,6 +23,11 @@ Panel {
     property string explanation
     property string detail
     property bool busy: false
+    // bootc's own progress for the running operation; {} when it reported none.
+    property var progress: ({})
+    readonly property bool progressKnown: busy && progress.known === true && progress.total > 0
+    readonly property string progressText: [progress.headline || "", progress.detail || ""]
+        .filter(part => part.length > 0).join(" — ")
     property QQC2.Action primaryAction: null
     property var secondaryActions: []
 
@@ -114,12 +120,25 @@ Panel {
         }
     }
 
+    QQC2.Label {
+        Layout.fillWidth: true
+        Layout.topMargin: Kirigami.Units.smallSpacing
+        visible: root.busy && text.length > 0
+        text: root.progressText
+        textFormat: Text.PlainText
+        wrapMode: Text.WordWrap
+    }
+
     QQC2.ProgressBar {
         Layout.fillWidth: true
         Layout.topMargin: Kirigami.Units.smallSpacing
         visible: root.busy
-        indeterminate: true
+        indeterminate: !root.progressKnown
+        from: 0
+        to: root.progressKnown ? root.progress.total : 1
+        value: root.progressKnown ? root.progress.value : 0
         Accessible.name: root.title
+        Accessible.description: root.progressText
     }
 
     Flow {
