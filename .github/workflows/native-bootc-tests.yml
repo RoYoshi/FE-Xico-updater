@@ -131,6 +131,35 @@ jobs:
             printf '@@FXEND@@\n'
           done
           exit $status
+      # Experiment: the progress bar does not appear in the offscreen previews
+      # (also the indeterminate one). Render the progress scenarios again with the
+      # Breeze widget style installed, offscreen and on a virtual X server, to see
+      # which part of the preview environment is missing. Review aid only.
+      - name: Progress bar rendering experiment
+        timeout-minutes: 10
+        if: matrix.fedora == 45 && steps.preview_deps.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          dnf5 -y install --setopt=install_weak_deps=False --skip-unavailable plasma-breeze xorg-x11-server-Xvfb >/dev/null
+          rpm -q plasma-breeze xorg-x11-server-Xvfb | sed 's/^/::notice title=Experiment packages::/'
+          export XDG_CURRENT_DESKTOP=KDE QT_FORCE_STDERR_LOGGING=1 QT_QUICK_BACKEND=software QT_QUICK_CONTROLS_STYLE=org.kde.desktop
+          export FE_XICO_PREVIEW_COLOR_SCHEME=BreezeDark
+          mkdir -p exp/offscreen-breeze exp/xvfb
+          QT_QPA_PLATFORM=offscreen dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews exp/offscreen-breeze >exp/offscreen.log 2>&1
+          Xvfb :91 -screen 0 1920x1200x24 >/dev/null 2>&1 & xpid=$!
+          sleep 2
+          DISPLAY=:91 QT_QPA_PLATFORM=xcb dbus-run-session -- timeout -k 10 90 /usr/bin/fe-xico-updater --render-previews exp/xvfb >exp/xvfb.log 2>&1
+          kill "$xpid" 2>/dev/null
+          for image in exp/offscreen-breeze/06-dashboard-updating.png exp/offscreen-breeze/16-dashboard-downloading.png \
+                       exp/xvfb/06-dashboard-updating.png exp/xvfb/16-dashboard-downloading.png; do
+            [ -s "$image" ] || { echo "::warning title=Experiment::missing $image"; continue; }
+            printf '@@FXIMG %s@@\n' "$(echo "$image" | tr '/' '-')"
+            base64 -w 4000 "$image"
+            printf '@@FXEND@@\n'
+          done
+          grep -iE "style|progress|warning" exp/*.log | head -n 20 | sed 's/^/::notice title=Experiment log::/'
       - uses: actions/upload-artifact@v4
         if: always() && matrix.fedora == 45
         with:
