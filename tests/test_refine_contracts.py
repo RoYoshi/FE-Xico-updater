@@ -31,11 +31,26 @@ class RefineContracts(unittest.TestCase):
         panel = read("components/StatusPanel.qml")
         bar = panel[panel.index("QQC2.ProgressBar {"):]
         bar = bar[:bar.index("}")]
-        self.assertIn("indeterminate: true", bar)
+        # Determinate only from bootc's own position and total, relayed by the backend.
         self.assertIn("visible: root.busy", bar)
-        self.assertNotIn("value:", bar)
-        for page in ("pages/system_update/SystemUpdate.qml", "pages/rebase_helper/RebaseHelper.qml"):
-            self.assertNotIn("ProgressBar", read(page))
+        self.assertIn("indeterminate: !root.progressKnown", bar)
+        self.assertIn("value: root.progressKnown ? root.progress.value : 0", bar)
+        self.assertIn("progress.known === true", panel)
+        self.assertNotIn("Animation", bar)
+        page = read("pages/system_update/SystemUpdate.qml")
+        self.assertIn("progress: AppState.progress", page)
+        for name in ("pages/system_update/SystemUpdate.qml", "pages/rebase_helper/RebaseHelper.qml"):
+            self.assertNotIn("ProgressBar", read(name))
+        native = read("native_operation.cpp")
+        # "known" is set only where bootc supplied a total the value does not exceed.
+        self.assertEqual(native.count('out[u"known"_s] = true;'), 2)
+        self.assertIn("bytesTotal > 0 && bytes <= bytesTotal", native)
+        self.assertIn("stepsTotal >= 2 && steps <= stepsTotal", native)
+        # No rates, time estimates or overall percentages.
+        for text in (panel, page, native):
+            self.assertNotRegex(text, r"(?i)\b(remaining|eta|per second|percent)\b|%1 ?%")
+        # Progress never decides: the result line alone sets the outcome.
+        self.assertIn("appState.clearProgress();", native)
 
     def test_up_to_date_is_only_the_verified_state(self):
         page = read("pages/system_update/SystemUpdate.qml")

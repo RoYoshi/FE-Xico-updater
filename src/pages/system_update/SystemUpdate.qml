@@ -328,6 +328,7 @@ Kirigami.ScrollablePage {
             explanation: page.stateExplanation()
             detail: page.stateDetail()
             busy: Status.isBusy(page.systemState)
+            progress: AppState.progress
             primaryAction: mainAction
             secondaryActions: [checkAction, statusAction]
         }
