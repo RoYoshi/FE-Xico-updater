@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "preview_tour.h"
+#include "native_operation.h"
 #include "utils.h"
 
 #include <KColorSchemeManager>
@@ -10,6 +11,7 @@
 #include <QDir>
 #include <QFont>
 #include <QImage>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QQmlApplicationEngine>
 #include <QQuickWindow>
@@ -84,6 +86,7 @@ QJsonObject withCachedUpdate()
 
 void reset()
 {
+    appState.clearProgress();
     appState.setUpdateRunning(false);
     appState.setRollbackRunning(false);
     appState.setCommandSucceeded(false);
@@ -107,6 +110,39 @@ void running(const QString &action, const QJsonObject &hostStatus = {})
         appState.setRollbackRunning(true);
     else
         appState.setUpdateRunning(true);
+}
+
+// Example progress records in the backend's FE_XICO_PROGRESS format, with
+// bootc-style events. The sizes are illustrative; they go through the same
+// parser as real records, and the window footer labels the image as simulated.
+void runningWithProgress(const QJsonObject &event, int seq)
+{
+    running(u"upgrade"_s, withCachedUpdate());
+    appState.setProgress(describeNativeProgress(QJsonObject{
+        {u"protocol"_s, 1}, {u"action"_s, u"upgrade"_s}, {u"invocation"_s, QString(32, u'0')},
+        {u"seq"_s, seq}, {u"state"_s, u"reporting"_s}, {u"bootcProtocol"_s, u"0.1.0"_s}, {u"event"_s, event}, {u"ignored"_s, 0},
+    }, u"upgrade"_s));
+}
+
+QJsonObject pullingEvent()
+{
+    return QJsonObject{
+        {u"type"_s, u"ProgressBytes"_s}, {u"task"_s, u"pulling"_s}, {u"description"_s, u"Pulling Image: sha256:preview-newer-image"_s},
+        {u"id"_s, u"sha256:preview-newer-image"_s}, {u"bytesCached"_s, 0}, {u"bytes"_s, 412000000.0}, {u"bytesTotal"_s, 1210000000.0},
+        {u"stepsCached"_s, 41}, {u"steps"_s, 2}, {u"stepsTotal"_s, 7}, {u"subtasks"_s, QJsonArray{}},
+    };
+}
+
+QJsonObject stagingEvent()
+{
+    return QJsonObject{
+        {u"type"_s, u"ProgressSteps"_s}, {u"task"_s, u"staging"_s}, {u"description"_s, u"Deploying Image"_s},
+        {u"id"_s, u"sha256:preview-newer-image"_s}, {u"stepsCached"_s, 0}, {u"steps"_s, 1}, {u"stepsTotal"_s, 3},
+        {u"subtasks"_s, QJsonArray{
+            QJsonObject{{u"subtask"_s, u"merging"_s}, {u"description"_s, u"Merging Image"_s}, {u"id"_s, u"merging"_s}, {u"completed"_s, true}},
+            QJsonObject{{u"subtask"_s, u"deploying"_s}, {u"description"_s, u"Deploying Image"_s}, {u"id"_s, u"deploying"_s}, {u"completed"_s, false}},
+        }},
+    };
 }
 
 QList<Scenario> scenarios()
@@ -159,6 +195,8 @@ QList<Scenario> scenarios()
         {u"15-dashboard-large-window"_s, 0, QSize(1920, 1080), [] {
             finished(u"check"_s, u"update-available"_s, u"An OS image update is available."_s, withCachedUpdate());
         }},
+        {u"16-dashboard-downloading"_s, 0, normal, [] { runningWithProgress(pullingEvent(), 5); }},
+        {u"17-dashboard-deploying"_s, 0, normal, [] { runningWithProgress(stagingEvent(), 9); }},
     };
 }
 

@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QDateTime>
 #include <QJsonObject>
+#include <QVariantMap>
 #include <QFileInfo>
 #include <QJSValue>
 #include <QModelIndex>
@@ -101,6 +102,10 @@ private:
     Q_PROPERTY(QString lastCheckOutcome READ lastCheckOutcome NOTIFY resultChanged)
     Q_PROPERTY(QDateTime lastCheckedAt READ lastCheckedAt NOTIFY resultChanged)
     Q_PROPERTY(bool allowCommands READ allowCommands NOTIFY allowCommandsChanged)
+    // Display data for the running upgrade, built only from bootc's own progress
+    // reports (describeNativeProgress); empty when bootc reported nothing.
+    // Informational only: the verified result alone decides the outcome.
+    Q_PROPERTY(QVariantMap progress READ progress NOTIFY progressChanged)
 
     Q_PROPERTY(QString commandError READ commandError NOTIFY commandErrorChanged)
 
@@ -157,6 +162,11 @@ public:
     void recordOutcome(const QString &action, bool success, const QString &outcome = {});
     // Forget recorded outcomes (test isolation only; not exposed to QML).
     void clearOutcome();
+    QVariantMap progress() const { return m_progress; }
+    // Show one validated progress record; older or repeated records are ignored.
+    void setProgress(const QVariantMap &progress);
+    void clearProgress();
+    Q_SIGNAL void progressChanged();
     void setOperation(const QString &action) { m_operation = action; Q_EMIT resultChanged(); }
     void setResult(const QString &message, const QJsonObject &host = {});
     Q_SIGNAL void resultChanged();
@@ -191,6 +201,7 @@ private:
     QString m_outcome;
     QString m_lastCheckOutcome;
     QDateTime m_lastCheckedAt;
+    QVariantMap m_progress;
     bool m_updateRunning = false;
     bool m_rollbackRunning = false;
     bool m_rebaseRunning = false;

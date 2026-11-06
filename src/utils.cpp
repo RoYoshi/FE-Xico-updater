@@ -157,6 +157,22 @@ void AppState::recordOutcome(const QString &action, bool success, const QString 
     Q_EMIT resultChanged();
 }
 
+void AppState::setProgress(const QVariantMap &progress)
+{
+    if (progress.value(u"seq"_s).toDouble() <= m_progress.value(u"seq"_s).toDouble())
+        return;
+    m_progress = progress;
+    Q_EMIT progressChanged();
+}
+
+void AppState::clearProgress()
+{
+    if (m_progress.isEmpty())
+        return;
+    m_progress.clear();
+    Q_EMIT progressChanged();
+}
+
 void AppState::clearOutcome()
 {
     m_outcome.clear();
